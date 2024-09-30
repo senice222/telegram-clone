@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+enum MemberRole {
+  ADMIN
+  MODERATOR
+  MEMBER
+  GUEST
+}
+
+model Profile {
+  id            String          @id @default(uuid())
+  userId        String          @unique
+  name          String
+  imageUrl      String?         @db.Text
+  email         String          @db.Text
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  memberships   Membership[]    // Links profiles to groups through Membership
+  groups        Group[]         // Groups created by this profile
+}
+
+model Group {
+  id          String        @id @default(uuid())
+  name        String
+  description String?       // Optional group description
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  members     Membership[]  // Relation to Membership to store members
+  messages    Message[]     // Messages sent in the group
+  owner       Profile?      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId     String?       // Group owner who created it
+}
+
+model Membership {
+  id             String        @id @default(uuid())
+  profile        Profile       @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId      String
+  group          Group         @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId        String
+  role           MemberRole    // Role of the profile within the group (ADMIN, MODERATOR, MEMBER, GUEST)
+  joinedAt       DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  messages       Message[]     // Messages sent by this member in groups
+  directMessages DirectMessage[] // Direct messages sent by this member
+  memberOneConversations Conversation[] @relation("MemberOne") // Conversations where this member is 'memberOne'
+  memberTwoConversations Conversation[] @relation("MemberTwo") // Conversations where this member is 'memberTwo'
+}
+
+model Message {
+  id         String     @id @default(uuid())
+  content    String     @db.Text
+  fileUrl    String?    @db.Text
+  memberId   String
+  channelId  String
+  deleted    Boolean    @default(false)
+
+  member     Membership @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  channel    Group      @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@index([channelId])
+  @@index([memberId])
+}
+
+model Conversation {
+  id                  String        @id @default(uuid())
+  memberOneId         String
+  memberOne           Membership    @relation("MemberOne", fields: [memberOneId], references: [id], onDelete: Cascade)
+  memberTwoId         String
+  memberTwo           Membership    @relation("MemberTwo", fields: [memberTwoId], references: [id], onDelete: Cascade)
+
+  directMessages      DirectMessage[]
+
+  @@index([memberTwoId])
+  @@unique([memberOneId, memberTwoId])
+}
+
+model DirectMessage {
+  id            String        @id @default(uuid())
+  content       String        @db.Text
+  fileUrl       String?       @db.Text
+  memberId      String
+  member        Membership    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  deleted       Boolean       @default(false)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([memberId])
+  @@index([conversationId])
+}
