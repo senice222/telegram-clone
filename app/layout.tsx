@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Open_Sans } from "next/font/google";
+import { Roboto } from "next/font/google";
 import { ClerkProvider } from '@clerk/nextjs'
 import { cn } from "@/lib/utils";
 import ModalProvider from "@/providers/modal-provider";
 
-const font = Open_Sans({ subsets: ["latin"] });
+const roboto = Roboto({
+    subsets: ["latin"],
+    weight: ["500", "400"]
+});
+// const openSans = Open_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "chat application",
@@ -21,7 +25,8 @@ export default function RootLayout({
       <html lang="en" suppressHydrationWarning>
         <body
           className={cn(
-            font.className,
+            // openSans.className,
+            roboto.className,
             "bg-[#313338]"
           )}
         >

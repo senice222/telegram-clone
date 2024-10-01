@@ -41,9 +41,10 @@ const ManageChannels: FC<ManageChannelsProps> = ({ hovered }) => {
             <motion.div
                 onMouseEnter={() => setIsHovered(true)} 
                 onMouseLeave={() => setIsHovered(false)} 
+                // onClick={() => setIsHovered(true)}
                 initial={{ opacity: 0, y: 100 }}
                 animate={{ opacity: hovered ? 1 : 0, y: hovered ? [100, -10, 0] : 100 }}
-                transition={{ duration: 0.3, type: "spring", bounce: 0.3 }} 
+                transition={{ duration: 0.5, type: "spring", bounce: 0.4 }} 
             >
                 <div
                     className="flex items-center justify-center w-[56px] h-[56px] rounded-full bg-[rgb(135,116,225)] hover:bg-[rgb(123,113,198)] transition shadow-lg cursor-pointer"
