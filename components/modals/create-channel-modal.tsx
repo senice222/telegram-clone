@@ -20,23 +20,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useModal } from "@/hooks/use-modal-hooks";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
+import InputFile from "../file-input";
 
 const formSchema = z.object({
     name: z.string().min(1, {
         message: "Channel name is required.",
-    }).refine(
-        name => name !== "general",
-        {
-            message: "Channel name cannot be 'general'"
-        }
-    ),
+    }),
+    description: z.string().optional(),
 });
 
 const CreateChannelModal = () => {
@@ -45,6 +35,7 @@ const CreateChannelModal = () => {
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: "",
+            description: ""
         },
     });
     const isModalOpen = isOpen && type === "createChannel";
@@ -63,7 +54,7 @@ const CreateChannelModal = () => {
         <Dialog open={isModalOpen} onOpenChange={handleClose}>
             <DialogContent className="bg-white text-black p-0 overflow-hidden">
                 <DialogHeader className="pt-8 px-6">
-                    <DialogTitle className="text-2xl text-center font-bold">
+                    <DialogTitle className="text-2xl text-center font-medium">
                         Create channel
                     </DialogTitle>
                 </DialogHeader>
@@ -73,19 +64,20 @@ const CreateChannelModal = () => {
                         className="space-y-8"
                     >
                         <div className="space-y-8 px-6">
+                            <InputFile />
                             <FormField
                                 control={form.control}
                                 name="name"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel
-                                            className="uppercase text-xs font-bold text-zinc-500 dark:text-secondary/70">
+                                            className="uppercase text-xs font-medium text-black dark:text-secondary/70">
                                             Channel name
                                         </FormLabel>
                                         <FormControl>
                                             <Input
                                                 disabled={isLoading}
-                                                className="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
+                                                className="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black placeholder:text-zinc-500 focus-visible:ring-offset-0"
                                                 placeholder="Enter channel name"
                                                 {...field}
                                             />
@@ -94,38 +86,30 @@ const CreateChannelModal = () => {
                                     </FormItem>
                                 )}
                             />
-                            <FormField render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>
-                                        Channel type
-                                    </FormLabel>
-                                    <Select
-                                        disabled={isLoading}
-                                        onValueChange={field.onChange}
-                                        defaultValue={field.value}
-                                    >
+                            <FormField
+                                control={form.control}
+                                name="description"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel
+                                            className="uppercase text-xs font-medium text-black dark:text-secondary/70">
+                                            Description
+                                        </FormLabel>
                                         <FormControl>
-                                            <SelectTrigger
-                                                className="bg-zinc-300/50 border-0 focus: ring-0 ☐ text-black ring-offset-0 focus: ring-offset-0 capitalize outline-none"
-                                            >
-                                                <SelectValue placeholder="Select a channel type" />
-                                            </SelectTrigger>
+                                            <Input
+                                                disabled={isLoading}
+                                                className="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0 placeholder:text-zinc-500"
+                                                placeholder="Enter description (optional)"
+                                                {...field}
+                                            />
                                         </FormControl>
-                                        <SelectContent>
-
-                                            <SelectItem value={"fdgdfg"} className={"capitalize"}>
-                                                {"sdfdsfsdfsdf"}
-                                            </SelectItem>
-
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )} name="type"
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
                             />
                         </div>
                         <DialogFooter className="bg-gray-100 px-6 py-4">
-                            <Button variant="default" disabled={isLoading}>
+                            <Button variant="primary" className="rounded-[6px]" size={"default"} disabled={isLoading}>
                                 Create
                             </Button>
                         </DialogFooter>

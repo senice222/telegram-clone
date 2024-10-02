@@ -32,11 +32,17 @@ const NavigationSidebar = () => {
                             transition={{ duration: 0.3 }}
                             className="flex flex-col h-full text-primary w-full bg-[rgb(33,33,33)] relative"
                         >
-                            <ScrollArea className="flex-1 w-full">
+                            <ScrollArea className="flex flex-col flex-1 w-full">
                                 <div className="p-2 h-full">
-                                    <ChatItem />
-                                    <ChatItem />
-                                    <ChatItem />
+                                    <div className='ml-1 p-1'>
+                                        <ChatItem />
+                                    </div>
+                                    <div className='ml-1 p-1'>
+                                        <ChatItem />
+                                    </div>
+                                    <div className='ml-1 p-1'>
+                                        <ChatItem />
+                                    </div>
                                 </div>
                             </ScrollArea>
                             <ManageChannels

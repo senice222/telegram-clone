@@ -36,6 +36,7 @@ const SearchChatsInput: FC<SearchChatsInputProps> = ({ isSearching, setIsSearchi
                     isFocused={isFocused}
                     inputRef={inputRef}
                     handleFocus={handleFocus}
+                    placeholder='Search chats'
                     setIsFocused={setIsFocused}
                 />
             </div>

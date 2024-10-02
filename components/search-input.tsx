@@ -9,9 +9,10 @@ interface SearchInputProps {
     isFocused?: boolean;
     classNames?: string;
     closeSearch?: () => void;
+    placeholder: string;
 }
 
-const SearchInput: FC<SearchInputProps> = ({ inputRef, handleFocus, setIsFocused, isFocused, classNames, closeSearch }) => {
+const SearchInput: FC<SearchInputProps> = ({ inputRef, handleFocus, setIsFocused, isFocused, classNames, closeSearch, placeholder }) => {
     return (
         <div className={cn('relative flex items-center justify-between', classNames)}>
             <div className='absolute inset-y-0 left-0 flex items-center pl-3'>
@@ -23,7 +24,7 @@ const SearchInput: FC<SearchInputProps> = ({ inputRef, handleFocus, setIsFocused
                 onBlur={setIsFocused ? () => setIsFocused(false) : undefined}
                 className='focus:border-[rgb(135,116,225)] text-white transition bg-[rgb(44,44,44)] rounded-[1.375rem] border-2 border-solid border-[rgb(44,44,44)] outline-none w-full h-[44px] px-10 text-sm'
                 type='text'
-                placeholder='Search chats'
+                placeholder={placeholder}
             />
             {
                 closeSearch && <div onClick={closeSearch} className='absolute top-[3px] inset-y-0 right-[10px] flex w-[40px] h-[40px] items-center justify-center rounded-full hover:bg-[#aaaaaa]/[.08]'>

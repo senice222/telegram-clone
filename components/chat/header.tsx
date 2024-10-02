@@ -50,7 +50,7 @@ const Header = () => {
         </div>
         {isSearching && (
           <div className={`w-full ml-[20px] mr-[20px] transition-opacity duration-300 ${isVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
-            <SearchInput closeSearch={closeSearch} />
+            <SearchInput placeholder="Search messages" closeSearch={closeSearch} />
           </div>
         )}
       </div>

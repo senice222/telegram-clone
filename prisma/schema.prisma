@@ -23,35 +23,20 @@ model Profile {
   email         String          @db.Text
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
-  memberships   Membership[]    // Links profiles to groups through Membership
-  groups        Group[]         // Groups created by this profile
+  channels  Channel[] @relation("MemberChannels") // Связь для членов каналов
+  ownedChannels Channel[] @relation("OwnerChannels") // Связь для владельцев каналов
 }
 
-model Group {
-  id          String        @id @default(uuid())
+model Channel {
+  id          String    @id @default(uuid())
   name        String
-  description String?       // Optional group description
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  members     Membership[]  // Relation to Membership to store members
-  messages    Message[]     // Messages sent in the group
-  owner       Profile?      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  ownerId     String?       // Group owner who created it
-}
-
-model Membership {
-  id             String        @id @default(uuid())
-  profile        Profile       @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  profileId      String
-  group          Group         @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  groupId        String
-  role           MemberRole    // Role of the profile within the group (ADMIN, MODERATOR, MEMBER, GUEST)
-  joinedAt       DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  messages       Message[]     // Messages sent by this member in groups
-  directMessages DirectMessage[] // Direct messages sent by this member
-  memberOneConversations Conversation[] @relation("MemberOne") // Conversations where this member is 'memberOne'
-  memberTwoConversations Conversation[] @relation("MemberTwo") // Conversations where this member is 'memberTwo'
+  description String?   
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  members     Profile   @relation("MemberChannels", fields: [id], references: [id], onDelete: Cascade)
+  messages    Message[] // Messages sent in the channel
+  owner       Profile?  @relation("OwnerChannels", fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId     String?   // Channel owner who created it
 }
 
 model Message {
@@ -59,25 +44,22 @@ model Message {
   content    String     @db.Text
   fileUrl    String?    @db.Text
   memberId   String
-  channelId  String
+  groupId  String
   deleted    Boolean    @default(false)
 
-  member     Membership @relation(fields: [memberId], references: [id], onDelete: Cascade)
-  channel    Group      @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  channel    Channel      @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
 
-  @@index([channelId])
+  @@index([groupId])
   @@index([memberId])
 }
 
 model Conversation {
   id                  String        @id @default(uuid())
   memberOneId         String
-  memberOne           Membership    @relation("MemberOne", fields: [memberOneId], references: [id], onDelete: Cascade)
   memberTwoId         String
-  memberTwo           Membership    @relation("MemberTwo", fields: [memberTwoId], references: [id], onDelete: Cascade)
 
   directMessages      DirectMessage[]
 
@@ -85,20 +67,20 @@ model Conversation {
   @@unique([memberOneId, memberTwoId])
 }
 
+
 model DirectMessage {
-  id            String        @id @default(uuid())
-  content       String        @db.Text
-  fileUrl       String?       @db.Text
-  memberId      String
-  member        Membership    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  id String @id @default(uuid())
+  content String @db.Text
+  fileUrl String? @db.Text
+
+  memberId String
 
   conversationId String
-  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-
-  deleted       Boolean       @default(false)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  
+  deleted Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   @@index([memberId])
   @@index([conversationId])
 }
