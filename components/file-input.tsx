@@ -1,10 +1,14 @@
 'use client'
 import { Camera, X } from "lucide-react";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { motion } from 'framer-motion'
 
-export default function InputFile() {
-    const [file, setFile] = useState<File | null>(null);
+interface InputFileProps {
+    file: File | null;
+    setFile: Dispatch<SetStateAction<File | null>>;
+}
+
+export default function InputFile({file, setFile}: InputFileProps) {
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = event.target.files?.[0];

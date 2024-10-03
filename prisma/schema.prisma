@@ -30,7 +30,8 @@ model Profile {
 model Channel {
   id          String    @id @default(uuid())
   name        String
-  description String?   
+  description String?  
+  image       String? 
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   members     Profile   @relation("MemberChannels", fields: [id], references: [id], onDelete: Cascade)

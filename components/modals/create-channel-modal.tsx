@@ -21,6 +21,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useModal } from "@/hooks/use-modal-hooks";
 import InputFile from "../file-input";
+import { axiosInstance } from "@/core/axios";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const formSchema = z.object({
     name: z.string().min(1, {
@@ -31,6 +34,7 @@ const formSchema = z.object({
 
 const CreateChannelModal = () => {
     const { isOpen, onClose, type } = useModal();
+    const [file, setFile] = useState<File | null>(null);
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -38,11 +42,30 @@ const CreateChannelModal = () => {
             description: ""
         },
     });
+    const router = useRouter();
     const isModalOpen = isOpen && type === "createChannel";
     const isLoading = form.formState.isSubmitting;
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        console.log(values)
+        try {
+            const formData = new FormData();
+            formData.append("name", values.name);
+            formData.append("description", values.description || "");
+            if (file) {
+                formData.append("image", file);
+            }
+
+            await axiosInstance.post("/api/channels", formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            form.reset();
+            router.refresh();
+            onClose()
+        } catch (e) {
+            console.log(e);
+        }
     };
 
     const handleClose = () => {
@@ -64,7 +87,7 @@ const CreateChannelModal = () => {
                         className="space-y-8"
                     >
                         <div className="space-y-8 px-6">
-                            <InputFile />
+                            <InputFile file={file} setFile={setFile} />
                             <FormField
                                 control={form.control}
                                 name="name"

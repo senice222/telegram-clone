@@ -27,8 +27,10 @@
     "cmdk": "^1.0.0",
     "emoji-picker-react": "^4.12.0",
     "framer-motion": "^11.9.0",
+    "fs": "^0.0.1-security",
     "lucide-react": "^0.446.0",
     "next": "14.2.13",
+    "path": "^0.12.7",
     "query-string": "^9.1.0",
     "react": "^18",
     "react-dom": "^18",
@@ -36,6 +38,7 @@
     "react-ripple-effect": "^1.0.4",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
+    "uuid": "^10.0.0",
     "zod": "^3.23.8",
     "zustand": "^5.0.0-rc.2"
   },
