@@ -3,7 +3,7 @@ import { initialProfile } from '@/lib/initialProfile';
 import React from 'react'
 
 const SetupLayout = async ({ children }: { children: React.ReactNode }) => {
-    const profile = await initialProfile()
+    // const profile = await initialProfile()
 
     return (
         <div className="h-full w-full flex">

@@ -28,6 +28,7 @@
     "emoji-picker-react": "^4.12.0",
     "framer-motion": "^11.9.0",
     "fs": "^0.0.1-security",
+    "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.446.0",
     "next": "14.2.13",
     "path": "^0.12.7",
@@ -43,6 +44,7 @@
     "zustand": "^5.0.0-rc.2"
   },
   "devDependencies": {
+    "@types/lodash.debounce": "^4.0.9",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

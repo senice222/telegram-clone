@@ -1,5 +1,6 @@
+
 "use client"
-import React from "react";
+import React, { useState } from "react";
 import { Smile, Paperclip, SendHorizontal } from "lucide-react";
 import Picker from '@emoji-mart/react';
 import data from '@emoji-mart/data';
@@ -7,6 +8,19 @@ import { Appendix } from "./svgs";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 const SendMessage = () => {
+  const [file, setFile] = useState(null);
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const handlePaperclipClick = () => {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.onchange = handleFileChange;
+    fileInput.click();
+  };
+
   
   return (
     <div className="h-[56px] w-full mb-[20px]">
@@ -25,7 +39,8 @@ const SendMessage = () => {
 
           <input className="h-full bg-transparent text-[15px] text-white outline-none ml-[7px] w-[90%]" />
           <div className="h-full cursor-pointer ml-[10px] w-[32px] flex items-center justify-center mr-[10px]">
-            <Paperclip color="rgb(170, 170, 170, 0.8)" width={24} />
+            <Paperclip color="rgb(170, 170, 170, 0.8)" width={24} onClick={handlePaperclipClick} />
+            {/* <Paperclip color="rgb(170, 170, 170, 0.8)" width={24} /> */}
           </div>
         </div>
         <Appendix />
@@ -38,3 +53,6 @@ const SendMessage = () => {
 };
 
 export default SendMessage;
+
+
+/******  0dbc4254-b2b2-44e0-ac2c-7fbca003a593  *******/

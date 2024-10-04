@@ -1,7 +1,8 @@
+import { initialProfile } from '@/lib/initialProfile';
 import React from 'react'
 
 const Page = async () => {
-    // const profile = await initialProfile()
+    const profile = await initialProfile()
 
     return (
         <div className="w-full h-full flex items-center justify-center">
