@@ -4,33 +4,35 @@ import { motion } from "framer-motion";
 import ChatItem from '../chats/chat-item';
 import debounce from "lodash.debounce";
 import { axiosInstance } from '@/core/axios';
+import { ChannelType } from '@/types/Channel';
+import useDebounce from '@/hooks/useDebouce';
 
 interface SearchNavbarProps {
     searchValue: string
 }
 
 const SearchNavbar = ({ searchValue }: SearchNavbarProps) => {
-    const [filteredResults, setFilteredResults] = useState<any[]>([]);
-
-    const debouncedFilter = debounce(async () => {
-        const query = searchValue;
-
-        if (query) {
-            try {
-                const { data } = await axiosInstance.get(`/api/search?q=${query}`);
-                setFilteredResults(data);
-            } catch (error) {
-                console.error("Ошибка поиска:", error);
-            }
-        } else {
-            setFilteredResults([]);
-        }
-    }, 400);
+    const [filteredResults, setFilteredResults] = useState<ChannelType[]>([]);
+    const debouncedValue = useDebounce(searchValue, 500); 
 
     useEffect(() => {
-        debouncedFilter();
-    }, [searchValue]);
+        const fetchResults = async () => {
+            const query = debouncedValue;
 
+            if (query) {
+                try {
+                    const { data } = await axiosInstance.get(`/api/search?q=${query}`);
+                    setFilteredResults(data);
+                } catch (error) {
+                    console.error("Ошибка поиска:", error);
+                }
+            } else {
+                setFilteredResults([]);
+            }
+        };
+
+        fetchResults();
+    }, [debouncedValue]);
     return (
         <motion.div
             className="flex flex-col h-full text-primary w-full bg-[rgb(33,33,33)] relative"

@@ -3,12 +3,14 @@ import React, { FC, useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Pencil, Speaker, Users, MessageCircle, Cross, X } from 'lucide-react';
 import { useModal } from '@/hooks/use-modal-hooks';
+import { User } from '@/types/User';
 
 interface ManageChannelsProps {
     hovered: boolean;
+    profile: User
 }
 
-const ManageChannels: FC<ManageChannelsProps> = ({ hovered }) => {
+const ManageChannels: FC<ManageChannelsProps> = ({ hovered, profile }) => {
     const [menuOpen, setMenuOpen] = useState(false);
     const { onOpen } = useModal()
 
@@ -66,7 +68,7 @@ const ManageChannels: FC<ManageChannelsProps> = ({ hovered }) => {
                         transition={{ duration: 0.2 }}
                     >
                         <ul className="flex flex-col gap-1">
-                            <li className="flex rounded-[.375rem] h-[32px] items-center gap-2 font-medium- hover:bg-gray-700 p-2 text-sm cursor-pointer hover:bg-[rgb(0,0,0,0.4)] transition" onClick={() => onOpen("createChannel")}>
+                            <li className="flex rounded-[.375rem] h-[32px] items-center gap-2 font-medium- hover:bg-gray-700 p-2 text-sm cursor-pointer hover:bg-[rgb(0,0,0,0.4)] transition" onClick={() => onOpen("createChannel", { profile })}>
                                 <Speaker stroke="rgb(170,170,170)" className="w-5 h-5" />
                                 New Channel
                             </li>

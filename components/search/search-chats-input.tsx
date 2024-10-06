@@ -20,7 +20,7 @@ const SearchChatsInput: FC<SearchChatsInputProps> = ({ searchValue, setSearchVal
             setIsLoading(true);
             const timeoutId = setTimeout(() => {
                 setIsLoading(false);
-            }, 400);
+            }, 500);
 
             return () => clearTimeout(timeoutId);
         } else {

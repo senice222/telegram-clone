@@ -1,6 +1,7 @@
 "use client";
 import CreateChannelModal from "@/components/modals/create-channel-modal";
-import { useEffect, useState } from "react";
+import { User } from "@/types/User";
+import { FC, useEffect, useState } from "react";
 
 
 const ModalProvider = () => {

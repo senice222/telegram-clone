@@ -24,6 +24,7 @@ import InputFile from "../file-input";
 import { axiosInstance } from "@/core/axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { redirectToSignUp } from "@clerk/nextjs";
 
 const formSchema = z.object({
     name: z.string().min(1, {
@@ -33,7 +34,9 @@ const formSchema = z.object({
 });
 
 const CreateChannelModal = () => {
-    const { isOpen, onClose, type } = useModal();
+    const { isOpen, onClose, type, data } = useModal();
+    const { profile } = data
+
     const [file, setFile] = useState<File | null>(null);
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -48,21 +51,24 @@ const CreateChannelModal = () => {
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-            const formData = new FormData();
-            formData.append("name", values.name);
-            formData.append("description", values.description || "");
-            if (file) {
-                formData.append("image", file);
-            }
+            if (profile) {
+                const formData = new FormData();
+                formData.append("name", values.name);
+                formData.append("ownerId", profile.id);
+                formData.append("description", values.description || "");
+                if (file) {
+                    formData.append("image", file);
+                }
 
-            await axiosInstance.post("/api/channels", formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-            form.reset();
-            router.refresh();
-            onClose()
+                await axiosInstance.post("/api/channels", formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+                form.reset();
+                router.refresh();
+                onClose()
+            }
         } catch (e) {
             console.log(e);
         }

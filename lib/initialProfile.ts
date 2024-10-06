@@ -1,5 +1,6 @@
 import { currentUser, redirectToSignIn } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
+import { axiosInstance } from "@/core/axios";
 
 export const initialProfile = async () => {
     const user = await currentUser();
@@ -8,21 +9,14 @@ export const initialProfile = async () => {
         return redirectToSignIn();
     }
 
-    const profile = await db.profile.findUnique({
-        where: {
-            userId: user.id,
-        },
-    });
+    const {data: profile} = await axiosInstance.get(`/api/user/${user.id}`)
 
     if (profile) return profile;
 
-    const newProfile = await db.profile.create({
-        data: {
-            userId: user.id,
-            name: `${user.firstName} ${user.lastName}`,
-            imageUrl: user.imageUrl,
-            email: user.emailAddresses[0].emailAddress,
-        },
-    });
-    return newProfile;
+    try {
+        const {data} = await axiosInstance.post("/api/user/create", user)
+        return data
+    } catch (e) {
+        console.log(e, "error creating user")
+    }
 };

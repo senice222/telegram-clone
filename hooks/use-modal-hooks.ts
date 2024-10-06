@@ -1,3 +1,4 @@
+import { User } from '@/types/User';
 import {create} from 'zustand'
 
 export type ModalType =
@@ -6,6 +7,7 @@ export type ModalType =
 interface ModalData {
     // server?: Server;
     // channel?: Channel;
+    profile?: User
     apiUrl?: string;
     // query?: Record<string, any>
 }

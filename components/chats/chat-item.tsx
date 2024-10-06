@@ -1,17 +1,18 @@
 "use client"
-import Image from 'next/image';
 import Link from 'next/link';
 import React, { FC } from 'react'
 import { motion, useAnimation } from "framer-motion"
+import { ChannelType } from '@/types/Channel';
 
 interface ChatItemProps {
-    data: any
+    data: ChannelType
 }
 
-const ChatItem:FC<ChatItemProps> = ({data}) => {
+const ChatItem: FC<ChatItemProps> = ({ data }) => {
     const controls = useAnimation()
 
     const handleClick = () => {
+
         controls.start({
             scale: [1, 1.05, 1],
             transition: {
@@ -23,17 +24,25 @@ const ChatItem:FC<ChatItemProps> = ({data}) => {
 
     return (
         <motion.div
-            className="w-[97%] h-[72px] text-white rounded-xl hover:bg-[rgb(44,44,44)] transition cursor-pointer flex items-center"
+            className="w-[97%] h-[72px] ml-1 text-white rounded-xl hover:bg-[rgb(44,44,44)] transition cursor-pointer flex items-center"
             onClick={handleClick}
             animate={controls}
         >
             <Link href={"/123123"} className="flex items-center">
-                <div className='ml-1'>
-                    <Image className="rounded-[50%]" width={54} height={54} src="https://i.imgur.com/33leJV4.png" alt="/" />
+                <div className='ml-2'>
+                    {data.image && (
+                        <img
+                            src={`${process.env.NEXT_PUBLIC_SERVER_URL}/api/uploads/${data.image}`}
+                            alt="Image"
+                            height={40}
+                            width={40}
+                            className='w-[40px] h-[40px] rounded-full object-cover'
+                        />
+                    )}
                 </div>
                 <div className="flex flex-col ml-3">
-                    <p className="sender-name font-medium text-[rgb(233,238,244)] mr-1">Panda:</p>
-                    <p className="text-[rgb(160,160,160)] text-sm">Фак, все равно не отображается</p>
+                    <p className="sender-name font-medium text-[rgb(233,238,244)] mr-1">{data.name}</p>
+                    {data.type !== "channel" && <p className="text-[rgb(160,160,160)] text-sm">Фак, все равно не отображается</p>}
                 </div>
             </Link>
         </motion.div>

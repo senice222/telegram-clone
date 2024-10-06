@@ -36,7 +36,7 @@ export default function InputFile({file, setFile}: InputFileProps) {
                         <img
                             src={URL.createObjectURL(file)}
                             alt="Uploaded"
-                            className="object-cover w-full h-full rounded-full"
+                            className="object-cover w-[120px] h-[120px] rounded-full"
                         />
                         <button
                             onClick={handleRemoveFile}

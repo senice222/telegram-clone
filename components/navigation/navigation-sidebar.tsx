@@ -2,14 +2,19 @@
 // import { currentProfile } from "@/lib/current-profile";
 import { UserButton } from "@clerk/nextjs";
 import { ScrollArea } from "../ui/scroll-area";
-import {  useState } from "react";
+import { FC, useState } from "react";
 import ManageChannels from "../manage-channels";
 import SearchChatsInput from "../search/search-chats-input";
 import SearchNavbar from "../search/search-navbar";
 import { motion, AnimatePresence } from "framer-motion";
+import { User } from "@/types/User";
 
-const NavigationSidebar = () => {
-    const [hovered, setHovered] = useState<boolean>(false) 
+interface SidebarProps {
+    profile: User
+}
+
+const NavigationSidebar: FC<SidebarProps> = ({ profile }) => {
+    const [hovered, setHovered] = useState<boolean>(false)
     const [isSearching, setIsSearching] = useState<boolean>(false)
     const [searchValue, setSearchValue] = useState<string>('')
 
@@ -43,7 +48,7 @@ const NavigationSidebar = () => {
                                     <div className='ml-1'>
                                         <ChatItem />
                                     </div> */}
-                                    
+
                                 </div>
                             </ScrollArea>
                             <div className="flex ml-2 flex-col">
@@ -56,6 +61,7 @@ const NavigationSidebar = () => {
                                     />
                                 </div>
                                 <ManageChannels
+                                    profile={profile}
                                     hovered={hovered}
                                 />
                             </div>
