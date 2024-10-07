@@ -1,3 +1,4 @@
+import { User } from "./User";
 
 export interface ChannelType {
     id: string,
@@ -6,9 +7,14 @@ export interface ChannelType {
     ownerId: string,
     createdAt: string,
     updatedAt: string,
+    members: [{
+        channelId: string,
+        profileId: string,
+    }]
     type: 'channel'
 }
 
 export interface ChannelChatProps {
-    channelData: ChannelType
+    channelData: ChannelType;
+    profile: User
 }

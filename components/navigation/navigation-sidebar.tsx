@@ -9,6 +9,7 @@ import SearchNavbar from "../search/search-navbar";
 import { motion, AnimatePresence } from "framer-motion";
 import { User } from "@/types/User";
 import { useSocket } from '@/providers/socket-provider';
+import ChatItem from "../chats/chat-item";
 
 interface SidebarProps {
     profile: User
@@ -18,8 +19,9 @@ const NavigationSidebar: FC<SidebarProps> = ({ profile }) => {
     const [hovered, setHovered] = useState<boolean>(false)
     const [isSearching, setIsSearching] = useState<boolean>(false)
     const [searchValue, setSearchValue] = useState<string>('')
-    const {isConnected} = useSocket()
-    console.log(isConnected)
+    const { isConnected } = useSocket()
+    const channels = profile?.channels
+
     return (
         <div
             className="space-y-4 flex flex-col h-full text-primary w-full bg-[rgb(33,33,33)] border-r-[#303030] border-r border-solid py-3 relative"
@@ -41,16 +43,19 @@ const NavigationSidebar: FC<SidebarProps> = ({ profile }) => {
                         >
                             <ScrollArea className="flex flex-col flex-1 w-full">
                                 <div className="p-2 h-full">
-                                    {/* <div className='ml-1'>
-                                        <ChatItem />
-                                    </div>
-                                    <div className='ml-1'>
-                                        <ChatItem />
-                                    </div>
-                                    <div className='ml-1'>
-                                        <ChatItem />
-                                    </div> */}
-
+                                    {channels.length > 0 ? (
+                                        channels.map((item, index) => (
+                                            <ChatItem key={index} data={item.channel} />
+                                        ))
+                                    ) : (
+                                        <div className='flex flex-col gap-3 select-none h-full items-center justify-center'>
+                                            <p className='text-[#686c72]'>No results</p>
+                                            <div className='flex flex-col items-center'>
+                                                <p className="text-[#aaaaaa] text-[.875rem]">There were no results.</p>
+                                                <p className="text-[#aaaaaa] text-[.875rem]">Try a new search.</p>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </ScrollArea>
                             <div className="flex ml-2 flex-col">

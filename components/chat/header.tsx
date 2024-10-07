@@ -3,11 +3,16 @@ import React, { useState, FC } from "react";
 import SearchInput from "../search-input";
 import { Search, EllipsisVertical } from "lucide-react";
 import { ChannelChatProps } from "@/types/Channel";
+import qs from "query-string";
+import { axiosInstance } from "@/core/axios";
+import { useRouter } from "next/navigation";
 
-const Header: FC<ChannelChatProps> = ({ channelData }) => {
+const Header: FC<ChannelChatProps> = ({ channelData, profile }) => {
   const [isSearching, setIsSearching] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [showContent, setShowContent] = useState(true);
+  const isUserMember = channelData?.members?.some(item => item.profileId === profile.id)
+  const router = useRouter()
 
   const startSearchTransition = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.stopPropagation()
@@ -27,6 +32,24 @@ const Header: FC<ChannelChatProps> = ({ channelData }) => {
       setTimeout(() => setIsVisible(true), 10);
     }, 300);
   };
+
+  const handleJoinChannel = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.stopPropagation()
+    const url = qs.stringifyUrl({
+      url: "/api/channel/join",
+      query: {
+        profileId: profile.id,
+        channelId: channelData.id
+      }
+    })
+
+    try {
+      await axiosInstance.post(url);
+      router.refresh();
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   return (
     <div className="w-full flex justify-between bg-[#212121] h-[56px] items-center">
@@ -57,6 +80,16 @@ const Header: FC<ChannelChatProps> = ({ channelData }) => {
         className={`flex items-center gap-[4px] mr-[10px] transition-opacity duration-300 ${isVisible && showContent ? "opacity-100" : "opacity-0 pointer-events-none"}`}
         style={{ display: showContent ? "flex" : "none" }}
       >
+        {
+          !isUserMember && (
+            <button
+              className='w-[135px] h-[36px] rounded-xl font-medium text-sm text-white bg-[rgb(135,116,225)] mr-2 hover:bg-[rgb(123,113,198)] transition'
+              onClick={(e) => handleJoinChannel(e)}
+            >
+              JOIN CHANNEL
+            </button>
+          )
+        }
         <div
           onClick={(e) => startSearchTransition(e)}
           className="flex w-[40px] h-[40px] items-center justify-center rounded-full hover:bg-[#aaaaaa]/[.08] transition-colors duration-200"

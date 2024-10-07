@@ -24,7 +24,6 @@ import InputFile from "../file-input";
 import { axiosInstance } from "@/core/axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { redirectToSignUp } from "@clerk/nextjs";
 
 const formSchema = z.object({
     name: z.string().min(1, {

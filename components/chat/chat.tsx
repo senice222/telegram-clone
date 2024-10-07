@@ -7,8 +7,7 @@ import RightPanel from "./right-panel";
 import { MessageI } from "@/types/Message";
 import { ChannelChatProps } from "@/types/Channel";
 
-const Chat: FC<ChannelChatProps> = ({ channelData }) => {
-    console.log(channelData)
+const Chat: FC<ChannelChatProps> = ({ channelData, profile }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement | null>(null);
     const headerRef = useRef<HTMLDivElement | null>(null);
@@ -80,7 +79,7 @@ const Chat: FC<ChannelChatProps> = ({ channelData }) => {
             className={`transition-all duration-300 ${isMenuOpen ? "w-[calc(100%-25vw)]" : "w-[100%]"
               }`}
           >
-            <Header channelData={channelData} />
+            <Header profile={profile} channelData={channelData} />
           </div>
 
           <div className="flex w-full h-full">

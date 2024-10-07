@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 
 interface ChatItemProps {
     data: ChannelType;
-    setIsSearching: Dispatch<SetStateAction<boolean>>
+    setIsSearching?: Dispatch<SetStateAction<boolean>>
 }
 
 const ChatItem: FC<ChatItemProps> = ({ data, setIsSearching }) => {
@@ -16,7 +16,9 @@ const ChatItem: FC<ChatItemProps> = ({ data, setIsSearching }) => {
 
     const handleClick = () => {
         router.push(`/${data.id}`)
-        setIsSearching(false)
+        if (setIsSearching) {
+            setIsSearching(false)
+        }
         controls.start({
             scale: [1, 1.05, 1],
             transition: {

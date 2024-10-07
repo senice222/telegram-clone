@@ -1,6 +1,7 @@
 import React from 'react'
 import Chat from '@/components/chat/chat';
 import { axiosInstance } from '@/core/axios';
+import { currentProfile } from '@/lib/currentProfile';
 
 interface ChanelIdParams {
   params: {
@@ -10,7 +11,8 @@ interface ChanelIdParams {
 
 const Page = async ({ params }: ChanelIdParams) => {
   const { channelId } = params
-
+  const currentUser = await currentProfile()
+  
   if (!channelId) {
     return null
   }
@@ -28,10 +30,11 @@ const Page = async ({ params }: ChanelIdParams) => {
       </div>
     );
   }
+  const isOwner = channelData?.ownerId === channelData?.members[0]?.profileId;
 
   return (
     <div>
-      <Chat channelData={channelData}/>
+      <Chat channelData={channelData} profile={currentUser} />
     </div>
   )
 }
