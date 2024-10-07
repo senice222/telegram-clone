@@ -8,3 +8,7 @@ export interface ChannelType {
     updatedAt: string,
     type: 'channel'
 }
+
+export interface ChannelChatProps {
+    channelData: ChannelType
+}

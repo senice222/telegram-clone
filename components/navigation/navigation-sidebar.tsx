@@ -8,6 +8,7 @@ import SearchChatsInput from "../search/search-chats-input";
 import SearchNavbar from "../search/search-navbar";
 import { motion, AnimatePresence } from "framer-motion";
 import { User } from "@/types/User";
+import { useSocket } from '@/providers/socket-provider';
 
 interface SidebarProps {
     profile: User
@@ -17,7 +18,8 @@ const NavigationSidebar: FC<SidebarProps> = ({ profile }) => {
     const [hovered, setHovered] = useState<boolean>(false)
     const [isSearching, setIsSearching] = useState<boolean>(false)
     const [searchValue, setSearchValue] = useState<string>('')
-
+    const {isConnected} = useSocket()
+    console.log(isConnected)
     return (
         <div
             className="space-y-4 flex flex-col h-full text-primary w-full bg-[rgb(33,33,33)] border-r-[#303030] border-r border-solid py-3 relative"
@@ -28,7 +30,7 @@ const NavigationSidebar: FC<SidebarProps> = ({ profile }) => {
             <AnimatePresence>
                 {
                     isSearching ? (
-                        <SearchNavbar searchValue={searchValue} />
+                        <SearchNavbar setIsSearching={setIsSearching} searchValue={searchValue} />
                     ) : (
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9 }}

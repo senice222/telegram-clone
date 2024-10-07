@@ -4,7 +4,7 @@ import React from 'react'
 
 const SetupLayout = async ({ children }: { children: React.ReactNode }) => {
     const profile = await initialProfile()
-
+    
     return (
         <div className="h-full w-full flex">
             <div className="hidden md:flex h-screen w-[25vw] z-30 flex-col">

@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { motion } from "framer-motion";
 import ChatItem from '../chats/chat-item';
 import debounce from "lodash.debounce";
@@ -8,10 +8,11 @@ import { ChannelType } from '@/types/Channel';
 import useDebounce from '@/hooks/useDebouce';
 
 interface SearchNavbarProps {
-    searchValue: string
+    searchValue: string;
+    setIsSearching: Dispatch<SetStateAction<boolean>>
 }
 
-const SearchNavbar = ({ searchValue }: SearchNavbarProps) => {
+const SearchNavbar = ({ searchValue, setIsSearching }: SearchNavbarProps) => {
     const [filteredResults, setFilteredResults] = useState<ChannelType[]>([]);
     const debouncedValue = useDebounce(searchValue, 500); 
 
@@ -43,7 +44,7 @@ const SearchNavbar = ({ searchValue }: SearchNavbarProps) => {
         >
             {filteredResults.length > 0 ? (
                 filteredResults.map((item, index) => (
-                    <ChatItem key={index} data={item} />
+                    <ChatItem setIsSearching={setIsSearching} key={index} data={item} />
                 ))
             ) : (
                 <div className='flex flex-col gap-3 select-none h-full items-center justify-center'>

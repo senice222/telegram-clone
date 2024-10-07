@@ -11,7 +11,7 @@ interface SearchInputProps {
     closeSearch?: () => void;
     placeholder: string;
     value?: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     isLoading?: boolean;
 }
 

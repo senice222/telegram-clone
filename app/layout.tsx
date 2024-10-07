@@ -4,10 +4,11 @@ import { Roboto } from "next/font/google";
 import { ClerkProvider } from '@clerk/nextjs'
 import { cn } from "@/lib/utils";
 import ModalProvider from "@/providers/modal-provider";
+import { SocketProvider } from "@/providers/socket-provider";
 
 const roboto = Roboto({
-    subsets: ["latin"],
-    weight: ["500", "400"]
+  subsets: ["latin"],
+  weight: ["500", "400"]
 });
 // const openSans = Open_Sans({ subsets: ["latin"] });
 
@@ -31,8 +32,10 @@ export default function RootLayout({
             "bg-[#313338]"
           )}
         >
-          <ModalProvider />
-          {children}
+          <SocketProvider>
+            <ModalProvider />
+            {children}
+          </SocketProvider>
         </body>
       </html>
     </ClerkProvider>

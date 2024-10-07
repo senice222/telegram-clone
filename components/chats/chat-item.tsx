@@ -1,18 +1,22 @@
 "use client"
 import Link from 'next/link';
-import React, { FC } from 'react'
+import React, { Dispatch, FC, SetStateAction } from 'react'
 import { motion, useAnimation } from "framer-motion"
 import { ChannelType } from '@/types/Channel';
+import { useRouter } from 'next/navigation';
 
 interface ChatItemProps {
-    data: ChannelType
+    data: ChannelType;
+    setIsSearching: Dispatch<SetStateAction<boolean>>
 }
 
-const ChatItem: FC<ChatItemProps> = ({ data }) => {
+const ChatItem: FC<ChatItemProps> = ({ data, setIsSearching }) => {
     const controls = useAnimation()
+    const router = useRouter()
 
     const handleClick = () => {
-
+        router.push(`/${data.id}`)
+        setIsSearching(false)
         controls.start({
             scale: [1, 1.05, 1],
             transition: {
@@ -21,14 +25,14 @@ const ChatItem: FC<ChatItemProps> = ({ data }) => {
             },
         })
     }
-
+    
     return (
         <motion.div
             className="w-[97%] h-[72px] ml-1 text-white rounded-xl hover:bg-[rgb(44,44,44)] transition cursor-pointer flex items-center"
             onClick={handleClick}
             animate={controls}
         >
-            <Link href={"/123123"} className="flex items-center">
+            <div className="flex items-center">
                 <div className='ml-2'>
                     {data.image && (
                         <img
@@ -44,7 +48,7 @@ const ChatItem: FC<ChatItemProps> = ({ data }) => {
                     <p className="sender-name font-medium text-[rgb(233,238,244)] mr-1">{data.name}</p>
                     {data.type !== "channel" && <p className="text-[rgb(160,160,160)] text-sm">Фак, все равно не отображается</p>}
                 </div>
-            </Link>
+            </div>
         </motion.div>
     )
 }
