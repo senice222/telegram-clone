@@ -89,9 +89,9 @@ const Chat: FC<ChannelChatProps> = ({channelData, profile}) => {
             </div>
         )
     }
-
+    //  ref={chatRef} 
     return (
-        <div ref={chatRef} className="w-full h-[100vh] flex">
+        <div className="w-full h-[100vh] flex">
             <div className="w-full h-[100vh] flex flex-col">
                 <div
                     ref={headerRef}
@@ -122,9 +122,6 @@ const Chat: FC<ChannelChatProps> = ({channelData, profile}) => {
                         <div className="w-[728px] max-lg:w-[90%] h-[calc(100%-20px)] max-[1500px]:bg-sky-300">
                             <div className="h-[calc(100%-56px)] overflow-y-auto p-4">
                                 {/* тут сообщения */}
-                                {/*{data.pages[0].items.map((message: MessageType) => (*/}
-                                {/*    <Message key={message.id} message={message} channel={channelData ? channelData : null} />*/}
-                                {/*))}*/}
                                 {data?.pages?.map((group, i) => (
                                     <Fragment key={i}>
                                         {group.items.map((message: MessageType) => (
@@ -136,7 +133,7 @@ const Chat: FC<ChannelChatProps> = ({channelData, profile}) => {
                                         ))}
                                     </Fragment>
                                 ))}
-                                <div ref={bottomRef} />
+                                {/* <div ref={bottomRef} /> */}
                             </div>
                             <SendMessage id={channelData.id}/>
                         </div>
