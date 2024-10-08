@@ -51,6 +51,8 @@ const Header: FC<ChannelChatProps> = ({ channelData, profile }) => {
     }
   }
 
+  if (!channelData) return null
+
   return (
     <div className="w-full flex justify-between bg-[#212121] h-[56px] items-center">
       <div className={`ml-[25px] flex items-center font-medium transition-all duration-300 ${isSearching ? "w-full" : ""}`}>

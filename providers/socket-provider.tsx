@@ -16,13 +16,16 @@ export const useSocket = () => {
     return useContext(SocketContext)
 }
 
-export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
+export const SocketProvider = ({ children, id }: { children: React.ReactNode, id: string }) => {
     const [socket, setSocket] = useState<any | null>(null)
     const [isConnected, setIsConnected] = useState(false)
 
     useEffect(() => {
         const socketInstance = new (ClientIO as any)(process.env.NEXT_PUBLIC_SITE_URL!, {
             path: "/api/socket/io",
+            query: {
+                id
+              },
             addTrailingSlash: false
         });
         socketInstance.on("connect", () => {

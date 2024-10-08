@@ -22,6 +22,8 @@ const NavigationSidebar: FC<SidebarProps> = ({ profile }) => {
     const { isConnected } = useSocket()
     const channels = profile?.channels
 
+    if (!channels) return null
+
     return (
         <div
             className="space-y-4 flex flex-col h-full text-primary w-full bg-[rgb(33,33,33)] border-r-[#303030] border-r border-solid py-3 relative"
