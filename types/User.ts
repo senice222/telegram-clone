@@ -7,6 +7,7 @@ export interface User {
     imageUrl: string,
     email: string,
     createdAt: string,
+    type: "user"
     channels: [{
         channelId: string,
         profileId: string,

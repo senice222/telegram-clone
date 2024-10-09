@@ -1,8 +1,9 @@
 import { User } from '@/types/User';
-import {create} from 'zustand'
+import { create } from 'zustand'
 
 export type ModalType =
     | "createChannel"
+    | "sendMessage"
 
 interface ModalData {
     // server?: Server;
@@ -24,6 +25,6 @@ export const useModal = create<ModalStore>((set) => ({
     type: null,
     data: {},
     isOpen: false,
-    onOpen: (type, data = {}) => set({isOpen: true, type, data}),
-    onClose: () => set({isOpen: false})
+    onOpen: (type, data = {}) => set({ isOpen: true, type, data }),
+    onClose: () => set({ isOpen: false })
 }))

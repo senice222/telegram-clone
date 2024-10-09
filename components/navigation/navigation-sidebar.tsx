@@ -1,8 +1,7 @@
 'use client';
-// import { currentProfile } from "@/lib/current-profile";
 import { UserButton } from "@clerk/nextjs";
 import { ScrollArea } from "../ui/scroll-area";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import ManageChannels from "../manage-channels";
 import SearchChatsInput from "../search/search-chats-input";
 import SearchNavbar from "../search/search-navbar";
@@ -19,9 +18,12 @@ const NavigationSidebar: FC<SidebarProps> = ({ profile }) => {
     const [hovered, setHovered] = useState<boolean>(false)
     const [isSearching, setIsSearching] = useState<boolean>(false)
     const [searchValue, setSearchValue] = useState<string>('')
-    const { isConnected } = useSocket()
     const channels = profile?.channels
+    const [isFirstRender, setIsFirstRender] = useState(true);
 
+    useEffect(() => {
+        setIsFirstRender(false);
+    }, []);
     if (!channels) return null
 
     return (
@@ -30,18 +32,24 @@ const NavigationSidebar: FC<SidebarProps> = ({ profile }) => {
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
         >
-            <SearchChatsInput searchValue={searchValue} setSearchValue={setSearchValue} isSearching={isSearching} setIsSearching={setIsSearching} />
+            <SearchChatsInput
+                isFirstRender={isFirstRender}
+                searchValue={searchValue}
+                setSearchValue={setSearchValue}
+                isSearching={isSearching}
+                setIsSearching={setIsSearching}
+            />
             <AnimatePresence>
                 {
                     isSearching ? (
                         <SearchNavbar setIsSearching={setIsSearching} searchValue={searchValue} />
                     ) : (
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
+                            initial={isFirstRender ? false : { opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.9 }}
                             transition={{ duration: 0.3 }}
-                            className="flex flex-col h-full text-primary w-full bg-[rgb(33,33,33)] relative "
+                            className="flex flex-col h-full text-primary w-full bg-[rgb(33,33,33)] relative"
                         >
                             <ScrollArea className="flex flex-col flex-1 w-full">
                                 <div className="p-2 h-full">

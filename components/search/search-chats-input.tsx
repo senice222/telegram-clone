@@ -1,6 +1,6 @@
 'use client'
 import { Search } from 'lucide-react'
-import React, { Dispatch, FC, RefObject, SetStateAction, useEffect, useRef, useState } from 'react'
+import React, { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
 import SearchBacktick from './search-backtick'
 import SearchInput from '../search-input';
 
@@ -9,9 +9,10 @@ export interface SearchChatsInputProps {
     setIsSearching: Dispatch<SetStateAction<boolean>>
     setSearchValue: Dispatch<SetStateAction<string>>
     searchValue: string
+    isFirstRender: boolean
 }
 
-const SearchChatsInput: FC<SearchChatsInputProps> = ({ searchValue, setSearchValue, isSearching, setIsSearching }) => {
+const SearchChatsInput: FC<SearchChatsInputProps> = ({ isFirstRender, searchValue, setSearchValue, isSearching, setIsSearching }) => {
     const [isFocused, setIsFocused] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -34,13 +35,14 @@ const SearchChatsInput: FC<SearchChatsInputProps> = ({ searchValue, setSearchVal
     };
 
     const handleBlur = () => {
+        setSearchValue('')
         setIsSearching(false);
         setIsFocused(false);
     };
 
     return (
         <div className='flex items-center'>
-            <SearchBacktick isSearching={isSearching} handleBackClick={handleBlur} />
+            <SearchBacktick isFirstRender={isFirstRender} isSearching={isSearching} handleBackClick={handleBlur} />
             <div
                 className='relative w-[85%] ml-1 mx-auto my-0 mr-1 text-[rgb(170,170,170)] h-[44px]'
             >

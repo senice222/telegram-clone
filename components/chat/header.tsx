@@ -54,7 +54,7 @@ const Header: FC<ChannelChatProps> = ({ channelData, profile }) => {
   if (!channelData) return null
 
   return (
-    <div className="w-full flex justify-between bg-[#212121] h-[56px] items-center">
+    <div className="w-full flex justify-between bg-[#212121] h-[56px] items-center cursor-pointer">
       <div className={`ml-[25px] flex items-center font-medium transition-all duration-300 ${isSearching ? "w-full" : ""}`}>
         <img
           className="rounded-full w-[40px] h-[40px] object-cover"
@@ -62,14 +62,14 @@ const Header: FC<ChannelChatProps> = ({ channelData, profile }) => {
           alt="avatar"
         />
         <div
-          className={`ml-[10px] transition-opacity duration-300 ${isVisible && showContent ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+          className={`ml-[10px] transition-opacity select-none duration-300 ${isVisible && showContent ? "opacity-100" : "opacity-0 pointer-events-none"}`}
           style={{ display: showContent ? "block" : "none" }}
         >
           <h1 className="text-white whitespace-pre font-medium text-[18px] text-lg leading-5">
             {channelData.name}
           </h1>
           <p className="text-[#aaaaaa] font-normal text-sm leading-4">
-            {channelData.type !== "channel" && "last seen 1m ago"}
+            {channelData.type !== "channel" ? "last seen 1m ago" : `${channelData.members.length} subscribers`}
           </p>
         </div>
         {isSearching && (

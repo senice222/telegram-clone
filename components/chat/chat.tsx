@@ -1,17 +1,18 @@
 "use client";
-import React, {ElementRef, FC, Fragment, useEffect, useRef, useState} from "react";
+import React, { ElementRef, FC, Fragment, useEffect, useRef, useState } from "react";
 import SendMessage from "./send-message";
 import Header from "./header";
 import RightPanel from "./right-panel";
-import {MessageI, MessageType} from "@/types/Message";
-import {ChannelChatProps} from "@/types/Channel";
-import {useChatQuery} from "@/hooks/use-channel-query";
+import { MessageI, MessageType } from "@/types/Message";
+import { ChannelChatProps } from "@/types/Channel";
+import { useChatQuery } from "@/hooks/use-channel-query";
 import Message from "@/components/chat/messages/message";
-import {useChatSocket} from "@/hooks/use-chat-socket";
-import {Loader2, ServerCrash} from "lucide-react";
-import {useChatScroll} from "@/hooks/use-chat-scroll";
+import { useChatSocket } from "@/hooks/use-chat-socket";
+import { Loader2, ServerCrash } from "lucide-react";
+import { useChatScroll } from "@/hooks/use-chat-scroll";
+import { ScrollArea } from "../ui/scroll-area";
 
-const Chat: FC<ChannelChatProps> = ({channelData, profile}) => {
+const Chat: FC<ChannelChatProps> = ({ channelData, profile }) => {
     const queryKey = `channel:${channelData.id}`
     const addKey = `channel:${channelData.id}:messages`
     const updateKey = `chat:${channelData.id}:messages:update`
@@ -27,7 +28,7 @@ const Chat: FC<ChannelChatProps> = ({channelData, profile}) => {
     const paramKey = "channelId" // | "conversationId";
     const paramValue = channelData.id
 
-    const {data, fetchNextPage, hasNextPage, isFetchingNextPage, status} = useChatQuery({
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = useChatQuery({
         queryKey,
         apiUrl,
         paramKey,
@@ -36,12 +37,10 @@ const Chat: FC<ChannelChatProps> = ({channelData, profile}) => {
     useChatSocket({ queryKey, addKey, updateKey })
     useChatScroll({
         chatRef,
-        bottomRef,
         loadMore: fetchNextPage,
         shouldLoadMore: !isFetchingNextPage && !!hasNextPage,
-        count: data?.pages?.[0].items?.length ?? 0
     })
-    console.log(data)
+
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             const target = event.target as Node;
@@ -74,7 +73,7 @@ const Chat: FC<ChannelChatProps> = ({channelData, profile}) => {
 
     if (status === "pending") {
         return (
-            <div className="flex flex-col flex-1 justify-center items-center">
+            <div className="h-screen flex flex-col flex-1 justify-center items-center">
                 <Loader2 className="h-7 w-7 text-zinc-500 animate-spin my-4" />
                 <p className="text-xs text-zinc-500 dark:text-zinc-400">Loading messages...</p>
             </div>
@@ -83,23 +82,22 @@ const Chat: FC<ChannelChatProps> = ({channelData, profile}) => {
 
     if (status === "error" || !data) {
         return (
-            <div className="flex flex-col flex-1 justify-center items-center">
+            <div className="h-screen flex flex-col flex-1 justify-center items-center">
                 <ServerCrash className="h-7 w-7 text-zinc-500 my-4" />
                 <p className="text-xs text-zinc-500 dark:text-zinc-400">Something went wrong!</p>
             </div>
         )
     }
-    //  ref={chatRef} 
+
     return (
         <div className="w-full h-[100vh] flex">
             <div className="w-full h-[100vh] flex flex-col">
                 <div
                     ref={headerRef}
                     onClick={handleHeaderClick}
-                    className={`transition-all duration-300 ${isMenuOpen ? "w-[calc(100%-25vw)] max-2xl:w-[100%]" : "w-[100%]"
-                    }`}
+                    className={`transition-all duration-300 ${isMenuOpen ? "w-[calc(100%-25vw)] max-2xl:w-[100%]" : "w-[100%]"}`}
                 >
-                    <Header profile={profile} channelData={channelData}/>
+                    <Header profile={profile} channelData={channelData} />
                 </div>
 
                 <div className="flex w-full h-full">
@@ -119,11 +117,11 @@ const Chat: FC<ChannelChatProps> = ({channelData, profile}) => {
                                 }
                             </div>
                         )}
-                        <div className="w-[728px] max-lg:w-[90%] h-[calc(100%-20px)] max-[1500px]:bg-sky-300">
-                            <div className="h-[calc(100%-56px)] overflow-y-auto p-4">
-                                {/* тут сообщения */}
+
+                        <div className="w-[728px] max-lg:w-[90%] h-[100%] overflow-y-hidden">
+                            <div ref={chatRef} className="h-[calc(100%-130px)] overflow-y-auto p-4">
                                 {data?.pages?.map((group, i) => (
-                                    <Fragment key={i}>
+                                    <div key={i} ref={bottomRef}>
                                         {group.items.map((message: MessageType) => (
                                             <Message
                                                 key={message.id}
@@ -131,11 +129,10 @@ const Chat: FC<ChannelChatProps> = ({channelData, profile}) => {
                                                 channel={channelData}
                                             />
                                         ))}
-                                    </Fragment>
+                                    </div>
                                 ))}
-                                {/* <div ref={bottomRef} /> */}
                             </div>
-                            <SendMessage id={channelData.id}/>
+                            <SendMessage id={channelData.id} />
                         </div>
                     </div>
                 </div>
