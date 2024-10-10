@@ -6,13 +6,16 @@ import debounce from "lodash.debounce";
 import { axiosInstance } from '@/core/axios';
 import { ChannelType } from '@/types/Channel';
 import useDebounce from '@/hooks/useDebouce';
+import qs from 'query-string'
+import {User} from "@/types/User";
 
 interface SearchNavbarProps {
     searchValue: string;
     setIsSearching: Dispatch<SetStateAction<boolean>>
+    profile: User
 }
 
-const SearchNavbar = ({ searchValue, setIsSearching }: SearchNavbarProps) => {
+const SearchNavbar = ({ profile, searchValue, setIsSearching }: SearchNavbarProps) => {
     const [filteredResults, setFilteredResults] = useState<ChannelType[]>([]);
     const debouncedValue = useDebounce(searchValue, 500); 
 
@@ -22,7 +25,14 @@ const SearchNavbar = ({ searchValue, setIsSearching }: SearchNavbarProps) => {
 
             if (query) {
                 try {
-                    const { data } = await axiosInstance.get(`/api/search?q=${query}`);
+                    const url = qs.stringifyUrl({
+                        url: "/api/search",
+                        query: {
+                            query: query,
+                            currentUserId: profile.id
+                        }
+                    })
+                    const { data } = await axiosInstance.get(url);
                     setFilteredResults(data);
                 } catch (error) {
                     console.error("Ошибка поиска:", error);
@@ -34,6 +44,7 @@ const SearchNavbar = ({ searchValue, setIsSearching }: SearchNavbarProps) => {
 
         fetchResults();
     }, [debouncedValue]);
+
     return (
         <motion.div
             className="flex flex-col h-full text-primary w-full bg-[rgb(33,33,33)] relative"
@@ -44,7 +55,7 @@ const SearchNavbar = ({ searchValue, setIsSearching }: SearchNavbarProps) => {
         >
             {filteredResults.length > 0 ? (
                 filteredResults.map((item, index) => (
-                    <ChatItem setIsSearching={setIsSearching} key={index} data={item} />
+                    <ChatItem key={index} type={"conversation"} profile={profile} setIsSearching={setIsSearching} data={item} />
                 ))
             ) : (
                 <div className='flex flex-col gap-3 select-none h-full items-center justify-center'>

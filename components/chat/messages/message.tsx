@@ -2,10 +2,11 @@ import React, {FC} from 'react'
 import {Appendix} from "../svgs";
 import {MessageType} from "@/types/Message";
 import {ChannelType} from "@/types/Channel";
+import {User} from "@/types/User";
 
 interface MessageProps {
     message: MessageType;
-    channel: ChannelType | null
+    channel: ChannelType
 }
 
 const Message: FC<MessageProps> = ({message, channel}) => {

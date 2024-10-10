@@ -42,7 +42,7 @@ const NavigationSidebar: FC<SidebarProps> = ({ profile }) => {
             <AnimatePresence>
                 {
                     isSearching ? (
-                        <SearchNavbar setIsSearching={setIsSearching} searchValue={searchValue} />
+                        <SearchNavbar profile={profile} setIsSearching={setIsSearching} searchValue={searchValue} />
                     ) : (
                         <motion.div
                             initial={isFirstRender ? false : { opacity: 0, scale: 0.9 }}
@@ -55,7 +55,7 @@ const NavigationSidebar: FC<SidebarProps> = ({ profile }) => {
                                 <div className="p-2 h-full">
                                     {channels.length > 0 ? (
                                         channels.map((item, index) => (
-                                            <ChatItem key={index} data={item.channel} />
+                                            <ChatItem key={index} profile={profile} data={item.channel} />
                                         ))
                                     ) : (
                                         <div className='flex flex-col gap-3 select-none h-full items-center justify-center'>

@@ -15,6 +15,6 @@ export interface ChannelType {
 }
 
 export interface ChannelChatProps {
-    channelData: ChannelType;
+    channelData: ChannelType
     profile: User
 }
