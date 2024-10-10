@@ -19,6 +19,12 @@ const NavigationSidebar: FC<SidebarProps> = ({ profile }) => {
     const [isSearching, setIsSearching] = useState<boolean>(false)
     const [searchValue, setSearchValue] = useState<string>('')
     const channels = profile?.channels
+
+    const allChats = [
+        ...(profile?.channels || []).map(channel => ({ ...channel, type: 'channel' })),
+        ...(profile?.conversationsReceived || []).map((conversation: any) => ({ ...conversation, type: 'conversation' })),
+        ...(profile?.conversationsInitiated || []).map((conversation: any) => ({ ...conversation, type: 'conversation' })),
+    ];
     const [isFirstRender, setIsFirstRender] = useState(true);
 
     useEffect(() => {
@@ -53,9 +59,15 @@ const NavigationSidebar: FC<SidebarProps> = ({ profile }) => {
                         >
                             <ScrollArea className="flex flex-col flex-1 w-full">
                                 <div className="p-2 h-full">
-                                    {channels.length > 0 ? (
-                                        channels.map((item, index) => (
-                                            <ChatItem key={index} profile={profile} data={item.channel} />
+                                    {allChats.length > 0 ? (
+                                        allChats.map((item, index) => (
+                                            <ChatItem
+                                                key={index}
+                                                type={item.type}
+                                                profile={profile}
+                                                data={item.type === "channel" ? item.channel : item}
+                                                setIsSearching={setIsSearching}
+                                            />
                                         ))
                                     ) : (
                                         <div className='flex flex-col gap-3 select-none h-full items-center justify-center'>

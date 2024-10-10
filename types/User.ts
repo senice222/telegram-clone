@@ -7,6 +7,8 @@ export interface User {
     imageUrl: string,
     email: string,
     createdAt: string,
+    conversationsReceived: any,
+    conversationsInitiated: any,
     type: "user"
     channels: [{
         channelId: string,
