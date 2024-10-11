@@ -17,7 +17,6 @@ export const useChatScroll = ({
     const topDiv = chatRef?.current;
     const handleScroll = () => {
       const scrollTop = topDiv?.scrollTop;
-      console.log(scrollTop)
       if (scrollTop === 0 && shouldLoadMore) {
         loadMore();
       }

@@ -16,22 +16,22 @@ const Page = async ({ params }: ChanelIdParams) => {
         return null
     }
 
-    const channelData = await getCurrentChannel(channelId)
-    console.log(channelData)
+    const data = await getCurrentChannel(channelId)
+
     return (
         <div>
-            {channelData.type === 'channel' ? (
+            {data.type === 'channel' ? (
                 <Chat
-                    key="channel"
-                    channelData={channelData}
+                    chatType="channel"
+                    channelData={data}
                     profile={currentUser}
                     apiUrl="/api/get-channel/messages"
                     paramKey="channelId"
                 />
             ) : (
                 <Chat
-                    key="conversation"
-                    channelData={channelData}
+                    chatType="conversation"
+                    channelData={data}
                     profile={currentUser}
                     apiUrl="/api/get-conversation/messages"
                     paramKey="conversationId"

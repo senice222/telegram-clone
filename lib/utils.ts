@@ -1,4 +1,5 @@
 import { axiosInstance } from "@/core/axios";
+import { ChannelType, ChatData, ConversationType } from "@/types/Channel";
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -24,4 +25,12 @@ export async function getCurrentChannel(channelId: string) {
   } catch (error: any) {
     console.error("Ошибка при загрузке данных о канале:", error);
   }
+}
+
+export const isConversation = (data: ChatData): data is ConversationType => {
+  return data.type === 'conversation'
+}
+
+export const isChannel = (data: ChatData): data is ChannelType => {
+  return data.type === 'channel'
 }

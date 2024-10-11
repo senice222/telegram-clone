@@ -7,19 +7,13 @@ import qs from "query-string";
 import { axiosInstance } from "@/core/axios";
 import { useRouter } from "next/navigation";
 import { User } from "@/types/User";
+import { isChannel, isConversation } from "@/lib/utils";
 
-const Header: FC<ChatHeaderProps> = ({ key, channelData, profile }) => {
+const Header: FC<ChatHeaderProps> = ({ chatType, channelData, profile }) => {
   const [isSearching, setIsSearching] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [showContent, setShowContent] = useState(true);
   const router = useRouter()
-  const isConversation = (data: ChatData): data is ConversationType => {
-    return data.type === 'conversation'
-  }
-
-  const isChannel = (data: ChatData): data is ChannelType => {
-    return data.type === 'channel'
-  }
 
   const isUserMember = isChannel(channelData) && channelData.members.some(item => item.profileId === profile.id)
 

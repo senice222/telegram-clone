@@ -19,4 +19,5 @@ export interface MessageType {
     createdAt: Date
     updatedAt: Date
     isOwn: boolean
+    memberId: string
 }

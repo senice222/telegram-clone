@@ -10,12 +10,14 @@ import Message from "@/components/chat/messages/message";
 import { useChatSocket } from "@/hooks/use-chat-socket";
 import { Loader2, ServerCrash } from "lucide-react";
 import { useChatScroll } from "@/hooks/use-chat-scroll";
+import { isChannel } from "@/lib/utils";
 
-const Chat: FC<ChatProps> = ({ key, paramKey, apiUrl, channelData, profile }) => {
-    const queryKey = `${key}:${channelData.id}`
-    const addKey = `${key}:${channelData.id}:messages`
-    const updateKey = `${key}:${channelData.id}:messages:update`
+const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile }) => {
+    const queryKey = `${chatType}:${channelData.id}`
+    const addKey = `${chatType}:${channelData.id}:messages`
+    const updateKey = `${chatType}:${channelData.id}:messages:update`
 
+    const bottomRef = useRef<ElementRef<"div">>(null)
     const chatRef = useRef<ElementRef<"div">>(null)
     const headerRef = useRef<HTMLDivElement | null>(null);
 
@@ -24,18 +26,18 @@ const Chat: FC<ChatProps> = ({ key, paramKey, apiUrl, channelData, profile }) =>
 
     const paramValue = channelData.id
 
-    // const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = useChatQuery({
-    //     queryKey,
-    //     apiUrl,
-    //     paramKey,
-    //     paramValue
-    // })
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = useChatQuery({
+        queryKey,
+        apiUrl,
+        paramKey,
+        paramValue
+    })
     useChatSocket({ queryKey, addKey, updateKey })
-    // useChatScroll({
-        // chatRef,
-        // loadMore: fetchNextPage,
-        // shouldLoadMore: !isFetchingNextPage && !!hasNextPage,
-    // })
+    useChatScroll({
+        chatRef,
+        loadMore: fetchNextPage,
+        shouldLoadMore: !isFetchingNextPage && !!hasNextPage,
+    })
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -67,23 +69,23 @@ const Chat: FC<ChatProps> = ({ key, paramKey, apiUrl, channelData, profile }) =>
         setIsMenuOpen(!isMenuOpen);
     };
 
-    // if (status === "pending") {
-    //     return (
-    //         <div className="h-screen flex flex-col flex-1 justify-center items-center">
-    //             <Loader2 className="h-7 w-7 text-zinc-500 animate-spin my-4" />
-    //             <p className="text-xs text-zinc-500 dark:text-zinc-400">Loading messages...</p>
-    //         </div>
-    //     )
-    // }
+    if (status === "pending") {
+        return (
+            <div className="h-screen flex flex-col flex-1 justify-center items-center">
+                <Loader2 className="h-7 w-7 text-zinc-500 animate-spin my-4" />
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">Loading messages...</p>
+            </div>
+        )
+    }
 
-    // if (status === "error" || !data) {
-    //     return (
-    //         <div className="h-screen flex flex-col flex-1 justify-center items-center">
-    //             <ServerCrash className="h-7 w-7 text-zinc-500 my-4" />
-    //             <p className="text-xs text-zinc-500 dark:text-zinc-400">Something went wrong!</p>
-    //         </div>
-    //     )
-    // }
+    if (status === "error" || !data) {
+        return (
+            <div className="h-screen flex flex-col flex-1 justify-center items-center">
+                <ServerCrash className="h-7 w-7 text-zinc-500 my-4" />
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">Something went wrong!</p>
+            </div>
+        )
+    }
 
     return (
         <div className="w-full h-[100vh] flex">
@@ -93,14 +95,14 @@ const Chat: FC<ChatProps> = ({ key, paramKey, apiUrl, channelData, profile }) =>
                     onClick={handleHeaderClick}
                     className={`transition-all duration-300 ${isMenuOpen ? "w-[calc(100%-25vw)] max-2xl:w-[100%]" : "w-[100%]"}`}
                 >
-                    <Header key={key} profile={profile} channelData={channelData} />
+                    <Header chatType={chatType} profile={profile} channelData={channelData} />
                 </div>
 
                 <div className="flex w-full h-full">
                     <div
                         className={`transition-all flex flex-col h-full items-center duration-300 ${isMenuOpen ? "w-[calc(100%-25vw)] max-2xl:w-[100%]" : "w-[100%]"}`}
                     >
-                        {/* {hasNextPage && (
+                        {hasNextPage && (
                             <div className='flex justify-center'>
                                 {
                                     isFetchingNextPage ? (
@@ -112,9 +114,9 @@ const Chat: FC<ChatProps> = ({ key, paramKey, apiUrl, channelData, profile }) =>
                                     )
                                 }
                             </div>
-                        )} */}
+                        )}
 
-                        {/* <div className="w-[728px] max-lg:w-[90%] h-[100%] overflow-y-hidden">
+                        <div className="w-[728px] max-lg:w-[90%] h-[100%] overflow-y-hidden">
                             <div ref={chatRef} className="h-[calc(100%-130px)] overflow-y-auto p-4">
                                 {data?.pages?.map((group, i) => (
                                     <div key={i} ref={bottomRef}>
@@ -123,23 +125,28 @@ const Chat: FC<ChatProps> = ({ key, paramKey, apiUrl, channelData, profile }) =>
                                                 key={message.id}
                                                 message={message}
                                                 channel={channelData}
+                                                profile={profile}
                                             />
                                         ))}
                                     </div>
                                 ))}
                             </div>
-                            <SendMessage id={channelData.id} />
-                        </div> */}
+                            <SendMessage
+                                id={channelData.id}
+                                apiUrl={isChannel(channelData) ? "channel/messages" : "conversation/messages"}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* <RightPanel
+            <RightPanel
                 menuRef={menuRef}
                 channelData={channelData}
                 isMenuOpen={isMenuOpen}
                 setMenuOpen={setIsMenuOpen}
-            /> */}
+                profile={profile}
+            />
         </div>
     );
 };

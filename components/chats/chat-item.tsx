@@ -1,14 +1,12 @@
 "use client"
-import Link from 'next/link';
 import React, { Dispatch, FC, SetStateAction } from 'react'
 import { motion, useAnimation } from "framer-motion"
-import { Channel, ChannelType, ChatData, ConversationType } from '@/types/Channel';
+import { ChannelType, ChatData } from '@/types/Channel';
 import { useRouter } from 'next/navigation';
 import { User } from '@/types/User';
 import qs from 'query-string'
 import { axiosInstance } from "@/core/axios";
-
-type UserWithConversation = User & { hasConversation: boolean }
+import { isChannel, isConversation } from '@/lib/utils';
 
 interface ChatItemProps {
     data: ChatData
@@ -20,9 +18,6 @@ interface ChatItemProps {
 const ChatItem: FC<ChatItemProps> = ({ type, profile, data, setIsSearching }) => {
     const controls = useAnimation()
     const router = useRouter()
-
-    const isChannel = (data: ChatData): data is ChannelType => type === "channel"
-    const isConversation = (data: ChatData): data is ConversationType => type === 'conversation'
     
     const otherUser: User | undefined = isConversation(data)
         ? (profile.id === data.memberOne.id ? data.memberTwo : data.memberOne)
@@ -49,6 +44,7 @@ const ChatItem: FC<ChatItemProps> = ({ type, profile, data, setIsSearching }) =>
             }
         }
     }
+    
     const handleClick = () => {
         router.push(data.id)
         if (setIsSearching) setIsSearching(false)

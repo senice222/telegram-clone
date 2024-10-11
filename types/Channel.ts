@@ -1,5 +1,11 @@
 import { User } from "./User";
 
+interface ChannelMember {
+    channelId: string,
+    profileId: string,
+    profile: User
+}
+
 export interface ChannelType {
     id: string,
     name: string,
@@ -7,11 +13,7 @@ export interface ChannelType {
     ownerId: string,
     createdAt: string,
     updatedAt: string,
-    members: [{
-        channelId: string,
-        profileId: string,
-        profile: User
-    }]
+    members: ChannelMember[]
     type: 'channel'
 }
 
@@ -34,14 +36,14 @@ export interface Channel {
 }
 
 export interface ChatProps {
-    key: "channel" | "conversation",
+    chatType: "channel" | "conversation",
     apiUrl: string,
     paramKey: "channelId" | "conversationId",
     channelData: ChannelType
     profile: User
 }
 export interface ChatHeaderProps {
-    key: "channel" | "conversation",
+    chatType: "channel" | "conversation",
     channelData: ChatData
     profile: User
 }

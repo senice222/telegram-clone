@@ -17,7 +17,6 @@ export const useChatSocket = ({addKey, updateKey, queryKey}: ChatSocketProps) =>
         if (!socket) {
             return;
         }
-
         socket.on(addKey, (message: any) => {
             queryClient.setQueryData([queryKey], (oldData: any) => {
                 if (!oldData ||!oldData.pages || oldData.length === 0) {
@@ -27,6 +26,7 @@ export const useChatSocket = ({addKey, updateKey, queryKey}: ChatSocketProps) =>
                         }]
                     }
                 }
+                console.log("UPDATE")
                 const newData = [...oldData.pages]
                 newData[0] = {
                     ...newData[0],
