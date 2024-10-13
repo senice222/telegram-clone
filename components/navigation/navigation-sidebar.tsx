@@ -56,7 +56,7 @@ const NavigationSidebar: FC<SidebarProps> = ({ profile }) => {
                 <SearchNavbar profile={profile} setIsSearching={setIsSearching} searchValue={searchValue} />
             </>
         ),
-        createGroup: <GroupNavbar usersToInvite={convMemberNotCurrent} setIsCreatingGroup={setIsCreatingGroup} />,
+        createGroup: <GroupNavbar profile={profile} usersToInvite={convMemberNotCurrent} setIsCreatingGroup={setIsCreatingGroup} />,
         default: <DefaultSidebar
             isFirstRender={isFirstRender}
             searchValue={searchValue}

@@ -31,7 +31,6 @@ const GroupNavbar: FC<GroupNavbarProps> = ({ profile, usersToInvite, setIsCreati
                 : [...prev, user]
         })
     }
-
     return (
         <motion.div
             className="flex flex-col h-full w-full bg-[rgb(33,33,33)] border-r-[#303030] text-primary relative"
@@ -118,7 +117,7 @@ const GroupNavbar: FC<GroupNavbarProps> = ({ profile, usersToInvite, setIsCreati
                 <div
                     onClick={() => {
                         if (!isDisabled) {
-                            onOpen("createGroup", { groupMembers: selectedMembers, profile });
+                            onOpen("createGroup", { groupMembers: selectedMembers, profile, setIsCreatingGroup });
                         }
                     }}
                     className={`flex items-center justify-center w-[56px] h-[56px] rounded-full 

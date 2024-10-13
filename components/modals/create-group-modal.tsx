@@ -34,7 +34,7 @@ const formSchema = z.object({
 
 const CreateGroupModal = () => {
     const { isOpen, onClose, type, data } = useModal();
-    const { groupMembers, profile } = data
+    const {  groupMembers, profile, setIsCreatingGroup } = data
     const [file, setFile] = useState<File | null>(null);
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -49,7 +49,7 @@ const CreateGroupModal = () => {
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-            if (profile) {
+            if (profile && setIsCreatingGroup) {
                 const formData = new FormData();
                 formData.append("name", values.name);
                 formData.append("ownerId", profile.id);
@@ -57,7 +57,7 @@ const CreateGroupModal = () => {
                 if (file) {
                     formData.append("image", file);
                 }
-
+                formData.append("members", JSON.stringify(groupMembers))
                 await axiosInstance.post("/api/group", formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
@@ -65,6 +65,7 @@ const CreateGroupModal = () => {
                 });
                 form.reset();
                 router.refresh();
+                setIsCreatingGroup(false)
                 onClose()
             }
         } catch (e) {

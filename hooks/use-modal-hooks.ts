@@ -1,4 +1,5 @@
 import { User } from '@/types/User';
+import { Dispatch, SetStateAction } from 'react';
 import { create } from 'zustand'
 
 export type ModalType =
@@ -11,7 +12,8 @@ interface ModalData {
     // channel?: Channel;
     profile?: User
     apiUrl?: string;
-    groupMembers?: User[]
+    groupMembers?: User[];
+    setIsCreatingGroup?: Dispatch<SetStateAction<boolean>>
     // query?: Record<string, any>
 }
 
