@@ -4,12 +4,14 @@ import { create } from 'zustand'
 export type ModalType =
     | "createChannel"
     | "sendMessage"
+    | "createGroup"
 
 interface ModalData {
     // server?: Server;
     // channel?: Channel;
     profile?: User
     apiUrl?: string;
+    groupMembers?: User[]
     // query?: Record<string, any>
 }
 

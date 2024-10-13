@@ -10,6 +10,7 @@ export interface User {
     conversationsReceived: any,
     conversationsInitiated: any,
     type: "user"
+    lastSeen: string,
     channels: [{
         channelId: string,
         profileId: string,

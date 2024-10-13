@@ -9,8 +9,8 @@ const SetupLayout = async ({ children }: { children: React.ReactNode }) => {
     return (
         <div className="h-full w-full flex">
             <div className="hidden md:flex h-screen w-[25vw] z-30 flex-col">
-                {/* <NavigationSidebar profile={profile} /> */}
-                <GroupNavbar />
+                <NavigationSidebar profile={profile} />
+                {/* <GroupNavbar /> */}
             </div>
 
             <main className="md:w-[75vw] w-full h-screen bg-chat-pattern-dark bg-[510px_auto] bg-[#0F0F0F]">

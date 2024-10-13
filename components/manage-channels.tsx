@@ -1,5 +1,5 @@
 "use client"
-import React, { FC, useEffect, useState } from 'react'
+import React, { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Pencil, Speaker, Users, MessageCircle, Cross, X } from 'lucide-react';
 import { useModal } from '@/hooks/use-modal-hooks';
@@ -7,10 +7,11 @@ import { User } from '@/types/User';
 
 interface ManageChannelsProps {
     hovered: boolean;
-    profile: User
+    profile: User;
+    setIsCreatingGroup: Dispatch<SetStateAction<boolean>>
 }
 
-const ManageChannels: FC<ManageChannelsProps> = ({ hovered, profile }) => {
+const ManageChannels: FC<ManageChannelsProps> = ({ hovered, profile, setIsCreatingGroup }) => {
     const [menuOpen, setMenuOpen] = useState(false);
     const { onOpen } = useModal()
 
@@ -68,11 +69,11 @@ const ManageChannels: FC<ManageChannelsProps> = ({ hovered, profile }) => {
                         transition={{ duration: 0.2 }}
                     >
                         <ul className="flex flex-col gap-1">
-                            <li className="flex rounded-[.375rem] h-[32px] items-center gap-2 font-medium- hover:bg-gray-700 p-2 text-sm cursor-pointer hover:bg-[rgb(0,0,0,0.4)] transition" onClick={() => onOpen("createChannel", { profile })}>
+                            <li onClick={() => onOpen("createChannel", { profile })} className="flex rounded-[.375rem] h-[32px] items-center gap-2 font-medium- hover:bg-gray-700 p-2 text-sm cursor-pointer hover:bg-[rgb(0,0,0,0.4)] transition">
                                 <Speaker stroke="rgb(170,170,170)" className="w-5 h-5" />
                                 New Channel
                             </li>
-                            <li className="flex rounded-[.375rem] h-[32px] items-center gap-2 font-medium hover:bg-gray-700 p-2 text-sm cursor-pointer hover:bg-[rgb(0,0,0,0.4)] transition">
+                            <li onClick={() => setIsCreatingGroup(true)} className="flex rounded-[.375rem] h-[32px] items-center gap-2 font-medium hover:bg-gray-700 p-2 text-sm cursor-pointer hover:bg-[rgb(0,0,0,0.4)] transition">
                                 <Users stroke="rgb(170,170,170)" className="w-5 h-5" />
                                 New Group
                             </li>

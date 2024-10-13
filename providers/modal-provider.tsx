@@ -1,6 +1,7 @@
 "use client";
 import SendImageModal from "@/components/chat/modals/sendImage.modal";
 import CreateChannelModal from "@/components/modals/create-channel-modal";
+import CreateGroupModal from "@/components/modals/create-group-modal";
 import { User } from "@/types/User";
 import { FC, useEffect, useState } from "react";
 
@@ -17,6 +18,7 @@ const ModalProvider = () => {
     return (
         <>
             <CreateChannelModal />
+            <CreateGroupModal />
             <SendImageModal />
         </>
     );
