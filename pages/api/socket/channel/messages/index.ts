@@ -13,7 +13,7 @@ const handler = async (
     }
     try {
         const currentProfile = await currentProfilePages(req)
-        const {channelId, content} = req.body;
+        const {channelId, content, type} = req.body;
 
         const url = qs.stringifyUrl({
             url: `/api/channel/message`,
@@ -23,7 +23,7 @@ const handler = async (
             },
         })
 
-        const {data} = await axiosInstance.patch(url, {content})
+        const {data} = await axiosInstance.patch(url, {content, type})
         const channelKey = `channel:${data.channelId}:messages`
 
         res?.socket?.server?.io.emit(channelKey, data)

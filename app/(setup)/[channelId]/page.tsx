@@ -17,10 +17,9 @@ const Page = async ({ params }: ChanelIdParams) => {
     }
 
     const data = await getCurrentChannel(channelId)
-
     return (
         <div>
-            {data.type === 'channel' ? (
+            {data?.type === 'channel' ? (
                 <Chat
                     chatType="channel"
                     channelData={data}

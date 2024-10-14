@@ -1,6 +1,7 @@
 import { User } from '@/types/User';
 import { Dispatch, SetStateAction } from 'react';
 import { create } from 'zustand'
+import { attachedFile } from '@/components/chat/send-message';
 
 export type ModalType =
     | "createChannel"
@@ -13,7 +14,10 @@ interface ModalData {
     profile?: User
     apiUrl?: string;
     groupMembers?: User[];
-    setIsCreatingGroup?: Dispatch<SetStateAction<boolean>>
+    setIsCreatingGroup?: Dispatch<SetStateAction<boolean>>,
+    file?: File,
+    id?: string,
+    
     // query?: Record<string, any>
 }
 

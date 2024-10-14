@@ -12,7 +12,10 @@ export interface MessageI {
 export interface MessageType {
     id: string,
     content: string,
-    fileUrl: string,
+    files: {
+        type: string,
+        fileUrls: Strin[]
+    },
     channelId: string
     deleted: boolean
     channel: ChannelType

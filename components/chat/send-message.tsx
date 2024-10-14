@@ -17,35 +17,54 @@ const formSchema = z.object({
   content: z.string().min(1),
 });
 
+export interface attachedFile {
+  file: File;
+  type: string;
+}
 const SendMessage = ({ id, apiUrl }: { id: string, apiUrl: string }) => {
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState<File | null>(null);
   const router = useRouter();
   const { onOpen } = useModal();
-
+  const [message, setMessage] = useState<attachedFile[]>([]);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       content: "",
     },
   });
+  const addFile = (file: attachedFile) => {
+    setMessage((prevMessages) => [...prevMessages, file]);
+  }
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
 
-  const handlePaperclipClick = () => {
-    const fileInput = document.createElement("input");
-    fileInput.type = "file";
-    fileInput.onchange = handleFileChange;
-    fileInput.click();
-  };
+const handlePaperclipClick = () => {
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.onchange = handleFileChange;
+  fileInput.click();
+};
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+const handleFileChange = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const selectedFile = target.files?.[0];
+  if (selectedFile) {
+    setFile(selectedFile);
+    onOpen("sendMessage", { file: selectedFile, id, apiUrl});
+  }
+};
+
+const onPhotoAttaching = () => {
+  handlePaperclipClick();
+};
+  
+const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const url = `${process.env.NEXT_PUBLIC_SITE_URL}/api/socket/${apiUrl}`
+      let type = "text"
+      console.log()
       const body = id.startsWith("-")
         ? { ...values, conversationId: id }
-        : { ...values, channelId: id };
+        : { ...values, channelId: id, type };
 
       await axios.post(url, body);
       form.reset();
@@ -116,7 +135,7 @@ const SendMessage = ({ id, apiUrl }: { id: string, apiUrl: string }) => {
 
                               className="mr-[160px] w-[200px] bg-[#212121]/85 backdrop-blur border-0 p-1 rounded-[8px] "
                             >
-                              <div onClick={() => onOpen("sendMessage")} className="w-full h-[32px] flex items-center hover:bg-[#000000]/40 rounded-[8px] transition cursor-pointer">
+                              <div onClick={() => onPhotoAttaching()} className="w-full h-[32px] flex items-center hover:bg-[#000000]/40 rounded-[8px] transition cursor-pointer">
                                 <Image className="ml-2" color="rgb(170, 170, 170)" width={19.6} />
                                 <h2 className="text-sm text-white ml-4">Photo or Video</h2>
                               </div>
