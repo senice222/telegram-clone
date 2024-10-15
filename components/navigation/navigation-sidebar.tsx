@@ -12,6 +12,7 @@ import ChatItem from "../chats/chat-item";
 import { ConversationType } from "@/types/Channel";
 import GroupNavbar from "../group-navbar/group-navbar";
 import DefaultSidebar from "./default-sidebar";
+import { useGroups } from "@/hooks/useGroup";
 
 interface SidebarProps {
     profile: User
@@ -23,11 +24,13 @@ const NavigationSidebar: FC<SidebarProps> = ({ profile }) => {
     const [searchValue, setSearchValue] = useState<string>('')
     const [isCreatingGroup, setIsCreatingGroup] = useState<boolean>(false)
     const channels = profile?.channels
-
+    const {data: groups} = useGroups()
+    console.log(groups)
     const allChats = [
         ...(profile?.channels || []).map(channel => ({ ...channel, type: 'channel' })),
         ...(profile?.conversationsReceived || []).map((conversation: ConversationType) => ({ ...conversation, type: 'conversation' })),
         ...(profile?.conversationsInitiated || []).map((conversation: ConversationType) => ({ ...conversation, type: 'conversation' })),
+        ...groups
     ];
     const conversations = [
         ...(profile?.conversationsReceived || []).map((conversation: ConversationType) => ({ ...conversation, type: 'conversation' })),

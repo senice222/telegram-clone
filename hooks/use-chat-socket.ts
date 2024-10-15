@@ -17,6 +17,12 @@ export const useChatSocket = ({addKey, updateKey, queryKey}: ChatSocketProps) =>
         if (!socket) {
             return;
         }
+        socket.on('group.created', (newGroup: any) => {
+            queryClient.setQueryData(['groups'], (oldData: any) => [
+                newGroup,
+                ...(oldData || []),
+            ]);
+        });
         socket.on(addKey, (message: any) => {
             queryClient.setQueryData([queryKey], (oldData: any) => {
                 if (!oldData ||!oldData.pages || oldData.length === 0) {
@@ -46,6 +52,7 @@ export const useChatSocket = ({addKey, updateKey, queryKey}: ChatSocketProps) =>
         return () => {
             socket.off(updateKey)
             socket.off(addKey)
+            socket.off('group.created');
         }
     }, [socket, queryClient, addKey, updateKey, queryKey])
 }

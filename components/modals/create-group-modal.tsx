@@ -24,6 +24,7 @@ import InputFile from "../file-input";
 import { axiosInstance } from "@/core/axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useCreateGroup } from "@/hooks/useCreateGroup";
 
 const formSchema = z.object({
     name: z.string().min(1, {
@@ -34,7 +35,7 @@ const formSchema = z.object({
 
 const CreateGroupModal = () => {
     const { isOpen, onClose, type, data } = useModal();
-    const {  groupMembers, profile, setIsCreatingGroup } = data
+    const { groupMembers, profile, setIsCreatingGroup } = data
     const [file, setFile] = useState<File | null>(null);
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -46,27 +47,22 @@ const CreateGroupModal = () => {
     const router = useRouter();
     const isModalOpen = isOpen && type === "createGroup";
     const isLoading = form.formState.isSubmitting;
+    const { mutate: createGroup } = useCreateGroup(() => {
+        router.refresh();
+        onClose();
+    });
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
             if (profile && setIsCreatingGroup) {
                 const formData = new FormData();
-                formData.append("name", values.name);
-                formData.append("ownerId", profile.id);
-                formData.append("description", values.description || "");
-                if (file) {
-                    formData.append("image", file);
-                }
-                formData.append("members", JSON.stringify(groupMembers))
-                await axiosInstance.post("/api/group", formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
-                form.reset();
-                router.refresh();
+                formData.append('name', values.name);
+                formData.append('ownerId', profile.id);
+                formData.append('description', values.description || '');
+                if (file) formData.append('image', file);
+                formData.append('members', JSON.stringify(groupMembers));
+                createGroup(formData);
                 setIsCreatingGroup(false)
-                onClose()
             }
         } catch (e) {
             console.log(e);

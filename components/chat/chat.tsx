@@ -23,7 +23,6 @@ const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile 
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement | null>(null);
-
     const paramValue = channelData.id
 
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = useChatQuery({
@@ -35,8 +34,10 @@ const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile 
     useChatSocket({ queryKey, addKey, updateKey })
     useChatScroll({
         chatRef,
+        bottomRef,
         loadMore: fetchNextPage,
         shouldLoadMore: !isFetchingNextPage && !!hasNextPage,
+        count: data?.pages?.[0].items?.length ?? 0
     })
 
     useEffect(() => {
@@ -88,38 +89,46 @@ const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile 
     }
 
     return (
-        <div className="w-full h-[100vh] flex">
-            <div className="w-full h-[100vh] flex flex-col">
+        <div className="w-full h-[100vh] flex overflow-hidden"> 
+            <div className="w-full h-full flex flex-col">
                 <div
                     ref={headerRef}
                     onClick={handleHeaderClick}
-                    className={`transition-all duration-300 ${isMenuOpen ? "w-[calc(100%-25vw)] max-2xl:w-[100%]" : "w-[100%]"}`}
+                    className={`transition-all duration-300 ${
+                        isMenuOpen ? 'w-[calc(100%-25vw)] max-2xl:w-[100%]' : 'w-[100%]'
+                    }`}
                 >
                     <Header chatType={chatType} profile={profile} channelData={channelData} />
                 </div>
 
                 <div className="flex w-full h-full">
                     <div
-                        className={`transition-all flex flex-col h-full items-center duration-300 ${isMenuOpen ? "w-[calc(100%-25vw)] max-2xl:w-[100%]" : "w-[100%]"}`}
+                        className={`transition-all flex flex-col h-full items-center duration-300 ${
+                            isMenuOpen ? 'w-[calc(100%-25vw)] max-2xl:w-[100%]' : 'w-[100%]'
+                        }`}
                     >
                         {hasNextPage && (
-                            <div className='flex justify-center'>
-                                {
-                                    isFetchingNextPage ? (
-                                        <Loader2 className="h-7 w-7 text-zinc-500 animate-spin my-4" />
-                                    ) : (
-                                        <button onClick={() => fetchNextPage()} className="my-4 text-xs text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition">
-                                            Load previous messages..
-                                        </button>
-                                    )
-                                }
+                            <div className="flex justify-center">
+                                {isFetchingNextPage ? (
+                                    <Loader2 className="h-7 w-7 text-zinc-500 animate-spin my-4" />
+                                ) : (
+                                    <button
+                                        onClick={() => fetchNextPage()}
+                                        className="my-4 text-xs text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition"
+                                    >
+                                        Load previous messages..
+                                    </button>
+                                )}
                             </div>
                         )}
 
-                        <div className="w-[728px] max-lg:w-[90%] h-[100%] overflow-y-hidden">
-                            <div ref={chatRef} className="h-[calc(100%-130px)] overflow-y-auto p-4">
+                        <div
+                            className="w-[728px] max-lg:w-[90%] h-full overflow-hidden"
+                            ref={chatRef} 
+                        >
+                            <div className="h-[calc(100%-130px)] overflow-y-auto p-4">
                                 {data?.pages?.map((group, i) => (
-                                    <div key={i} ref={bottomRef}>
+                                    <div key={i}>
                                         {group.items.map((message: MessageType) => (
                                             <Message
                                                 key={message.id}
@@ -130,10 +139,11 @@ const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile 
                                         ))}
                                     </div>
                                 ))}
+                                <div ref={bottomRef} />
                             </div>
                             <SendMessage
                                 id={channelData.id}
-                                apiUrl={isChannel(channelData) ? "channel/messages" : "conversation/messages"}
+                                apiUrl={isChannel(channelData) ? 'channel/messages' : 'conversation/messages'}
                             />
                         </div>
                     </div>
