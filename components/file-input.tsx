@@ -1,7 +1,6 @@
 'use client'
 import { Camera, X } from "lucide-react";
-import { Dispatch, SetStateAction, useState } from "react";
-import { motion } from 'framer-motion'
+import { Dispatch, SetStateAction } from "react";
 
 interface InputFileProps {
     file: File | null;

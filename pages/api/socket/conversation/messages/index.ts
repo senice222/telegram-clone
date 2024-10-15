@@ -1,45 +1,17 @@
 // @ts-nocheck
-
 import { axiosInstance } from "@/core/axios";
 import { currentProfilePages } from "@/lib/currentProfilePages";
 import { NextApiRequest, NextApiResponse } from "next";
 import multer from "multer";
 import qs from "query-string";
-
-const storage = multer.memoryStorage();
-const upload = multer({ storage }).array("fileUrls", 10);
+import { parseBody, runMiddleware, upload, storage } from "@/lib/multer";
 
 export const config = {
   api: {
     bodyParser: false,
   },
 };
-
-const runMiddleware = (req, res, fn) => {
-  return new Promise((resolve, reject) => {
-    fn(req, res, (result) => {
-      if (result instanceof Error) return reject(result);
-      return resolve(result);
-    });
-  });
-};
-
-const parseBody = (req) => {
-  return new Promise((resolve, reject) => {
-    let body = '';
-    req.on('data', (chunk) => {
-      body += chunk.toString();
-    });
-    req.on('end', () => {
-      try {
-        const parsed = JSON.parse(body);
-        resolve(parsed);
-      } catch (error) {
-        reject(error);
-      }
-    });
-  });
-};
+const upload = multer({ storage }).array("fileUrls", 10);
 
 const handler = async (req, res) => {
   if (req.method !== "POST") {
@@ -78,9 +50,8 @@ const handler = async (req, res) => {
       const blob = new Blob([file.buffer], { type: file.mimetype });
       formData.append("fileUrls", blob, file.originalname);
     });
-
     const { data } = await axiosInstance.patch(url, formData, {
-      headers: { "Content-Type": "multipart/form-data" }, 
+      headers: { "Content-Type": "multipart/form-data" },
     });
 
     const conversationKey = `conversation:${data.conversationId}:messages`;

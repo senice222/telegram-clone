@@ -24,8 +24,15 @@ const NavigationSidebar: FC<SidebarProps> = ({ profile }) => {
     const [searchValue, setSearchValue] = useState<string>('')
     const [isCreatingGroup, setIsCreatingGroup] = useState<boolean>(false)
     const channels = profile?.channels
+    const [isFirstRender, setIsFirstRender] = useState(true);
     const {data: groups} = useGroups()
-    console.log(groups)
+    
+    useEffect(() => {
+        setIsFirstRender(false);
+    }, []);
+
+    if (!groups) return null
+
     const allChats = [
         ...(profile?.channels || []).map(channel => ({ ...channel, type: 'channel' })),
         ...(profile?.conversationsReceived || []).map((conversation: ConversationType) => ({ ...conversation, type: 'conversation' })),
@@ -36,14 +43,11 @@ const NavigationSidebar: FC<SidebarProps> = ({ profile }) => {
         ...(profile?.conversationsReceived || []).map((conversation: ConversationType) => ({ ...conversation, type: 'conversation' })),
         ...(profile?.conversationsInitiated || []).map((conversation: ConversationType) => ({ ...conversation, type: 'conversation' })),
     ]
-    const [isFirstRender, setIsFirstRender] = useState(true);
     const convMemberNotCurrent = conversations
         .filter((conv) => conv.memberOneId === profile.id || conv.memberTwoId === profile.id)
         .map((conv) => (conv.memberOneId === profile.id ? conv.memberTwo : conv.memberOne));
     
-    useEffect(() => {
-        setIsFirstRender(false);
-    }, []);
+    
     if (!channels) return null
 
     const navbarComponents = {

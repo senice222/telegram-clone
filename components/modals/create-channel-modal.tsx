@@ -35,7 +35,6 @@ const formSchema = z.object({
 const CreateChannelModal = () => {
     const { isOpen, onClose, type, data } = useModal();
     const { profile } = data
-
     const [file, setFile] = useState<File | null>(null);
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -47,7 +46,7 @@ const CreateChannelModal = () => {
     const router = useRouter();
     const isModalOpen = isOpen && type === "createChannel";
     const isLoading = form.formState.isSubmitting;
-
+    
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
             if (profile) {

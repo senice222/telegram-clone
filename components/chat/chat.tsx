@@ -13,7 +13,7 @@ import { useChatScroll } from "@/hooks/use-chat-scroll";
 import { isChannel } from "@/lib/utils";
 
 const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile }) => {
-    const queryKey = `${chatType}:${channelData.id}`
+    const queryKey = `${chatType}:${channelData?.id}`
     const addKey = `${chatType}:${channelData.id}:messages`
     const updateKey = `${chatType}:${channelData.id}:messages:update`
 

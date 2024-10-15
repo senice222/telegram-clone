@@ -58,8 +58,10 @@ const CreateGroupModal = () => {
                 const formData = new FormData();
                 formData.append('name', values.name);
                 formData.append('ownerId', profile.id);
-                formData.append('description', values.description || '');
-                if (file) formData.append('image', file);
+                if (file) {
+                    console.log("file:", file)
+                    formData.append('image', file);
+                }
                 formData.append('members', JSON.stringify(groupMembers));
                 createGroup(formData);
                 setIsCreatingGroup(false)

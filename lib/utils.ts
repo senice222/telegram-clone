@@ -34,3 +34,4 @@ export const isConversation = (data: ChatData): data is ConversationType => {
 export const isChannel = (data: ChatData): data is ChannelType => {
   return data.type === 'channel'
 }
+

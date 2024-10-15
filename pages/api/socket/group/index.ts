@@ -1,48 +1,51 @@
+// @ts-nocheck
 import { IncomingForm } from 'formidable';
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest } from 'next';
 import { axiosInstance } from '@/core/axios';
-import { currentProfilePages } from '@/lib/currentProfilePages';
 import { NextApiResponseServerIo } from '@/types';
+import fs from 'fs';
+import { Blob } from 'blob-polyfill'
+import { parseBody, runMiddleware, storage } from "@/lib/multer";
+import multer from "multer";
 
 export const config = {
   api: {
-    bodyParser: false, // Disable Next.js built-in body parser
+    bodyParser: false,
   },
 };
+const upload = multer({ storage }).single("image");
 
 const handler = async (req: NextApiRequest, res: NextApiResponseServerIo) => {
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
+  try {
+    let name, ownerId, members, files;
 
-  const form = new IncomingForm();
+    if (req.headers["content-type"]?.includes("multipart/form-data")) {
+      await runMiddleware(req, res, upload);
+      ({ name, ownerId, members } = req.body);
+      files = req.file
+    } 
 
-  form.parse(req, async (err: any, fields: any, files: any) => {
-    if (err) {
-      console.error('Form parsing error:', err);
-      return res.status(500).json({ message: 'Error parsing form data' });
-    }
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('ownerId', ownerId);
+    formData.append('members', members);
+    formData.append('image', new Blob([files.buffer], { type: files.mimetype }), files.originalname);
 
-    try {
-      const { name, description, ownerId, members } = fields;
-      const formData = new FormData();
+    const { data } = await axiosInstance.post('/api/group', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
 
-      formData.append('name', name[0] as string);
-      formData.append('ownerId', ownerId[0] as string);
-      formData.append('description', description[0] || '');
-      formData.append('members', members[0])
+    const channelKey = `group.created`;
+    res?.socket?.server?.io.emit(channelKey, data);
 
-      const { data } = await axiosInstance.post('/api/group', formData);
-
-      const channelKey = `group.created`;
-      res?.socket?.server?.io.emit(channelKey, data);
-
-      return res.status(200).json(data);
-    } catch (error) {
-      console.error('Request handling error:', error);
-      return res.status(500).json({ message: 'Internal Server Error' });
-    }
-  });
+    return res.status(200).json(data);
+  } catch (error) {
+    console.error('Request handling error:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
 };
 
 export default handler;

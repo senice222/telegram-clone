@@ -28,6 +28,7 @@ const SendImageModal = () => {
         formData.append("content", text);
         formData.append("type", typeMsg);
         formData.append("conversationId", data?.id);
+        formData.append("channelId", data?.id);
 
         photos.forEach((photo) => {
           formData.append("fileUrls", photo); 
