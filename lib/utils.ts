@@ -1,5 +1,6 @@
 import { axiosInstance } from "@/core/axios";
 import { ChannelType, ChatData, ConversationType } from "@/types/Channel";
+import { Group } from "@/types/Group";
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -34,4 +35,6 @@ export const isConversation = (data: ChatData): data is ConversationType => {
 export const isChannel = (data: ChatData): data is ChannelType => {
   return data.type === 'channel'
 }
-
+export const isGroup = (data: ChatData): data is Group => {
+  return data.type === 'group';
+}

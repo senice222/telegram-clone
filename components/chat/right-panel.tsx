@@ -4,7 +4,7 @@ import Media from "./chat-tabs/media";
 import Files from "./chat-tabs/files";
 import Links from "./chat-tabs/links";
 import { Tabs, Tab } from "@nextui-org/tabs";
-import { isChannel, isConversation } from "@/lib/utils";
+import { isChannel, isConversation, isGroup } from "@/lib/utils";
 import { User } from "@/types/User";
 import { ChannelType, ChatData } from "@/types/Channel";
 
@@ -29,7 +29,7 @@ const RightPanel = ({
     isConversation(channelData)
       ? (profile.id === channelData.memberOne.id ? channelData.memberTwo : channelData.memberOne)
       : undefined
-  const backgroundImageUrl = isChannel(channelData) ? `${process.env.NEXT_PUBLIC_SERVER_URL}/api/uploads/${channelData.image}` : otherUser?.imageUrl
+  const backgroundImageUrl = isChannel(channelData) || isGroup(channelData) ? `${process.env.NEXT_PUBLIC_SERVER_URL}/api/uploads/${channelData.image}` : otherUser?.imageUrl
 
 
   return (
@@ -61,8 +61,9 @@ const RightPanel = ({
             <p className="text-[#aaaaaa] font-normal text-sm leading-4 mt-[3px]">
               {isConversation(channelData)
                 ? "last seen 1m ago"
-                : `${(channelData as ChannelType).members.length} subscribers`
-              }
+                : isGroup(channelData)
+                  ? `${channelData.members.length} members`
+                  : `${channelData.members.length} subscribers`}
             </p>
           </div>
         </div>

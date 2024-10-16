@@ -1,12 +1,12 @@
 "use client"
 import React, { Dispatch, FC, SetStateAction } from 'react'
 import { motion, useAnimation } from "framer-motion"
-import { ChannelType, ChatData } from '@/types/Channel';
+import { ChatData } from '@/types/Channel';
 import { useRouter } from 'next/navigation';
 import { User } from '@/types/User';
 import qs from 'query-string'
 import { axiosInstance } from "@/core/axios";
-import { isChannel, isConversation } from '@/lib/utils';
+import { isChannel, isConversation, isGroup } from '@/lib/utils';
 
 interface ChatItemProps {
     data: ChatData
@@ -18,11 +18,10 @@ interface ChatItemProps {
 const ChatItem: FC<ChatItemProps> = ({ type, profile, data, setIsSearching }) => {
     const controls = useAnimation()
     const router = useRouter()
-    
+
     const otherUser: User | undefined = isConversation(data)
         ? (profile.id === data.memberOne.id ? data.memberTwo : data.memberOne)
         : undefined
-    const channel = isChannel(data) ? (data as ChannelType) : null
 
     const handleCreateConversation = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation()
@@ -44,7 +43,7 @@ const ChatItem: FC<ChatItemProps> = ({ type, profile, data, setIsSearching }) =>
             }
         }
     }
-    
+
     const handleClick = () => {
         router.push(data.id)
         if (setIsSearching) setIsSearching(false)
@@ -57,7 +56,7 @@ const ChatItem: FC<ChatItemProps> = ({ type, profile, data, setIsSearching }) =>
             },
         })
     }
-
+    
     return (
         <motion.div
             onClick={handleClick}
@@ -68,8 +67,11 @@ const ChatItem: FC<ChatItemProps> = ({ type, profile, data, setIsSearching }) =>
                 <div className="w-[100%] flex items-center">
                     <div className='ml-2'>
                         <img
-                            src={isChannel(data) ? `${process.env.NEXT_PUBLIC_SERVER_URL}/api/uploads/${channel?.image}` : otherUser?.imageUrl || ''}
-                            alt="User Avatar"
+                            src={
+                                isChannel(data) || isGroup(data)
+                                    ? `${process.env.NEXT_PUBLIC_SERVER_URL}/api/uploads/${data.image}`
+                                    : otherUser?.imageUrl
+                            } alt="User Avatar"
                             height={40}
                             width={40}
                             className='w-[40px] h-[40px] rounded-full object-cover'
@@ -77,7 +79,7 @@ const ChatItem: FC<ChatItemProps> = ({ type, profile, data, setIsSearching }) =>
                     </div>
                     <div className="flex flex-col ml-3">
                         <p className="sender-name font-medium text-[rgb(233,238,244)] mr-1">
-                            {isChannel(data) ? channel?.name : otherUser?.name || ''}
+                            {isChannel(data) || isGroup(data) ? data?.name : otherUser?.name || ''}
                         </p>
                         {!isChannel(data) && (
                             <p className="text-[rgb(160,160,160)] text-sm">Фак, все рав...</p>

@@ -2,25 +2,31 @@
 import React, { useState, FC } from "react";
 import SearchInput from "../search-input";
 import { Search, EllipsisVertical } from "lucide-react";
-import { ChannelType, ChatData, ChatHeaderProps, ConversationType } from "@/types/Channel";
+import { ChannelType, ChannelMember, ChatHeaderProps, ConversationType } from "@/types/Channel";
 import qs from "query-string";
 import { axiosInstance } from "@/core/axios";
 import { useRouter } from "next/navigation";
 import { User } from "@/types/User";
-import { isChannel, isConversation } from "@/lib/utils";
+import { isChannel, isConversation, isGroup } from "@/lib/utils";
+import { Member } from "@/types/Group";
 
 const Header: FC<ChatHeaderProps> = ({ chatType, channelData, profile }) => {
   const [isSearching, setIsSearching] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [showContent, setShowContent] = useState(true);
   const router = useRouter()
-
-  const isUserMember = isChannel(channelData) && channelData.members.some(item => item.profileId === profile.id)
+  console.log(channelData)
+  const isUserMember =
+    isChannel(channelData)
+      ? channelData.members.some((item: ChannelMember) => item.profileId === profile.id)
+      : isGroup(channelData)
+        ? channelData.members.some((item: Member) => item.memberId === profile.id)
+        : false;
 
   const otherUser: User | undefined =
     isConversation(channelData)
       ? (profile.id === channelData.memberOne.id ? channelData.memberTwo : channelData.memberOne)
-      : undefined
+      : undefined;
 
   const startSearchTransition = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.stopPropagation()
@@ -66,7 +72,11 @@ const Header: FC<ChatHeaderProps> = ({ chatType, channelData, profile }) => {
       <div className={`ml-[25px] flex items-center font-medium transition-all duration-300 ${isSearching ? "w-full" : ""}`}>
         <img
           className="rounded-full w-[40px] h-[40px] object-cover"
-          src={isChannel(channelData) ? `${process.env.NEXT_PUBLIC_SERVER_URL}/api/uploads/${channelData.image}` : otherUser?.imageUrl}
+          src={
+            isChannel(channelData) || isGroup(channelData)
+              ? `${process.env.NEXT_PUBLIC_SERVER_URL}/api/uploads/${channelData.image}`
+              : otherUser?.imageUrl
+          }
           alt="avatar"
         />
         <div
@@ -79,8 +89,9 @@ const Header: FC<ChatHeaderProps> = ({ chatType, channelData, profile }) => {
           <p className="text-[#aaaaaa] font-normal text-sm leading-4">
             {isConversation(channelData)
               ? "last seen 1m ago"
-              : `${(channelData as ChannelType).members.length} subscribers`
-            }
+              : isGroup(channelData)
+                ? `${channelData.members.length} members`
+                : `${channelData.members.length} subscribers`}
           </p>
         </div>
         {isSearching && (
@@ -99,7 +110,7 @@ const Header: FC<ChatHeaderProps> = ({ chatType, channelData, profile }) => {
               className='w-[135px] h-[36px] rounded-xl font-medium text-sm text-white bg-[rgb(135,116,225)] mr-2 hover:bg-[rgb(123,113,198)] transition'
               onClick={(e) => handleJoinChannel(e)}
             >
-              JOIN CHANNEL
+              {isGroup(channelData) ? "JOIN GROUP" : "JOIN CHANNEL"}
             </button>
           )
         }

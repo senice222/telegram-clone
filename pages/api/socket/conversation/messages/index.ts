@@ -4,7 +4,7 @@ import { currentProfilePages } from "@/lib/currentProfilePages";
 import { NextApiRequest, NextApiResponse } from "next";
 import multer from "multer";
 import qs from "query-string";
-import { parseBody, runMiddleware, upload, storage } from "@/lib/multer";
+import { parseBody, runMiddleware, storage } from "@/lib/multer";
 
 export const config = {
   api: {

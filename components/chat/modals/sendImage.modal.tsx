@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import { useModal } from "@/hooks/use-modal-hooks";
 import axios from "axios";
+import { EllipsisVertical } from "lucide-react";
 
 const SendImageModal = () => {
   const { isOpen, onClose, type, data } = useModal();
@@ -23,23 +24,23 @@ const SendImageModal = () => {
 
   const onSubmit = async () => {
     try {
-        const url = `/api/socket/${data.apiUrl}`;
-        const formData = new FormData();
-        formData.append("content", text);
-        formData.append("type", typeMsg);
-        formData.append("conversationId", data?.id);
-        formData.append("channelId", data?.id);
+      const url = `/api/socket/${data.apiUrl}`;
+      const formData = new FormData();
+      formData.append("content", text);
+      formData.append("type", typeMsg);
+      formData.append("conversationId", data?.id);
+      formData.append("channelId", data?.id);
 
-        photos.forEach((photo) => {
-          formData.append("fileUrls", photo); 
-        });
+      photos.forEach((photo) => {
+        formData.append("fileUrls", photo);
+      });
 
-        await axios.post(url, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+      await axios.post(url, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
-        console.log("Сообщение отправлено успешно");
-        handleClose();
+      console.log("Сообщение отправлено успешно");
+      handleClose();
     } catch (error) {
       console.error("Ошибка при отправке сообщения:", error);
     }
@@ -68,7 +69,12 @@ const SendImageModal = () => {
     <Dialog open={isModalOpen} onOpenChange={handleClose}>
       <DialogContent className="bg-[#212121] border-none text-black items-start p-0 overflow-auto w-[420px] rounded-[12px]">
         <DialogHeader className="pt-4 px-6">
-          <h2 className="text-xl text-white">Send Photo</h2>
+          <div className='flex items-center'>
+            <h2 className="text-xl w-[120px] text-white">Send Photo</h2>
+            <div className="h-full cursor-pointer">
+              <EllipsisVertical color="white" />
+            </div>
+          </div>
         </DialogHeader>
         <div className="px-2 h-full flex flex-col">
           <div className="max-h-[400px] overflow-auto grid gap-2 h-full grid-cols-2">

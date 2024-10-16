@@ -1,6 +1,7 @@
+import { Group } from "./Group";
 import { User } from "./User";
 
-interface ChannelMember {
+export interface ChannelMember {
     channelId: string,
     profileId: string,
     profile: User
@@ -25,8 +26,7 @@ export type ConversationType = {
     type: 'conversation';
 }
 
-
-export type ChatData = ChannelType | ConversationType
+export type ChatData = ChannelType | ConversationType | Group
 
 export interface Channel {
     channelId: string,
@@ -36,14 +36,14 @@ export interface Channel {
 }
 
 export interface ChatProps {
-    chatType: "channel" | "conversation",
+    chatType: "channel" | "conversation" | "group",
     apiUrl: string,
-    paramKey: "channelId" | "conversationId",
+    paramKey: "channelId" | "conversationId" | "groupId",
     channelData: ChannelType
     profile: User
 }
 export interface ChatHeaderProps {
-    chatType: "channel" | "conversation",
+    chatType: "channel" | "conversation" | "group",
     channelData: ChatData
     profile: User
 }

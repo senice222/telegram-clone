@@ -8,6 +8,8 @@ interface ChanelIdParams {
         channelId: string
     }
 }
+type ChatTypes = 'channel' | 'conversation' | 'group';
+
 const Page = async ({ params }: ChanelIdParams) => {
     const { channelId } = params
     const currentUser = await currentProfile()
@@ -17,6 +19,37 @@ const Page = async ({ params }: ChanelIdParams) => {
     }
 
     const data = await getCurrentChannel(channelId)
+
+    const chatObj: Record<ChatTypes, JSX.Element> = {
+        "channel": (
+            <Chat
+                chatType="channel"
+                channelData={data}
+                profile={currentUser}
+                apiUrl="/api/get-channel/messages"
+                paramKey="channelId"
+            />
+        ),
+        "conversation": (
+            <Chat
+                chatType="conversation"
+                channelData={data}
+                profile={currentUser}
+                apiUrl="/api/get-conversation/messages"
+                paramKey="conversationId"
+            />
+        ),
+        "group": (
+            <Chat
+                chatType="group"
+                channelData={data}
+                profile={currentUser}
+                apiUrl="/api/get-group/messages"
+                paramKey="groupId"
+            />
+        )
+    }
+    const CurrentChat = chatObj[data?.type as ChatTypes]
     return (
         <div>
             {data?.type === 'channel' ? (
