@@ -5,11 +5,12 @@ import {useEffect} from "react";
 type ChatSocketProps = {
     addKey: string;
     updateKey: string;
-    queryKey: string
+    queryKey: string;
+    groupKey: string
 }
 
 
-export const useChatSocket = ({addKey, updateKey, queryKey}: ChatSocketProps) => {
+export const useChatSocket = ({addKey, updateKey, queryKey, groupKey}: ChatSocketProps) => {
     const {socket} = useSocket()
     const queryClient = useQueryClient()
 
@@ -17,7 +18,7 @@ export const useChatSocket = ({addKey, updateKey, queryKey}: ChatSocketProps) =>
         if (!socket) {
             return;
         }
-        socket.on('group.created', (newGroup: any) => {
+        socket.on(groupKey, (newGroup: any) => {
             queryClient.setQueryData(['groups'], (oldData: any) => [
                 newGroup,
                 ...(oldData || []),
@@ -32,7 +33,6 @@ export const useChatSocket = ({addKey, updateKey, queryKey}: ChatSocketProps) =>
                         }]
                     }
                 }
-                console.log("UPDATE")
                 const newData = [...oldData.pages]
                 newData[0] = {
                     ...newData[0],
@@ -52,7 +52,7 @@ export const useChatSocket = ({addKey, updateKey, queryKey}: ChatSocketProps) =>
         return () => {
             socket.off(updateKey)
             socket.off(addKey)
-            socket.off('group.created');
+            socket.off(groupKey);
         }
     }, [socket, queryClient, addKey, updateKey, queryKey])
 }

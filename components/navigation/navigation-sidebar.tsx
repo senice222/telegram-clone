@@ -25,7 +25,7 @@ const NavigationSidebar: FC<SidebarProps> = ({ profile }) => {
     const [isCreatingGroup, setIsCreatingGroup] = useState<boolean>(false)
     const channels = profile?.channels
     const [isFirstRender, setIsFirstRender] = useState(true);
-    const {data: groups} = useGroups()
+    const {data: groups} = useGroups(profile.id)
     
     useEffect(() => {
         setIsFirstRender(false);

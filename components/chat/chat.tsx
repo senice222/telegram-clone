@@ -18,8 +18,9 @@ import Error from "./error/error";
 
 const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile }) => {
     const queryKey = `${chatType}:${channelData?.id}`
-    const addKey = `${chatType}:${channelData.id}:messages`
-    const updateKey = `${chatType}:${channelData.id}:messages:update`
+    const addKey = `${chatType}:${channelData?.id}:messages`
+    const updateKey = `${chatType}:${channelData?.id}:messages:update`
+    const groupKey = `group:${profile.id}:created`;
 
     const bottomRef = useRef<ElementRef<"div">>(null)
     const chatRef = useRef<ElementRef<"div">>(null)
@@ -27,7 +28,7 @@ const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile 
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement | null>(null);
-    const paramValue = channelData.id
+    const paramValue = channelData?.id
 
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = useChatQuery({
         queryKey,
@@ -35,7 +36,7 @@ const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile 
         paramKey,
         paramValue
     })
-    useChatSocket({ queryKey, addKey, updateKey })
+    useChatSocket({ queryKey, addKey, updateKey, groupKey })
     useChatScroll({
         chatRef,
         bottomRef,

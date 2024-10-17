@@ -1,11 +1,11 @@
 import { axiosInstance } from '@/core/axios';
 import { useQuery } from '@tanstack/react-query';
 
-export const useGroups = () =>
+export const useGroups = (profileId: string) =>
     useQuery({
         queryKey: ['groups'],
         queryFn: async () => {
-            const { data } = await axiosInstance.get('/api/groups');
+            const { data } = await axiosInstance.get(`/api/groups/${profileId}`);
             return data;
         },
     });

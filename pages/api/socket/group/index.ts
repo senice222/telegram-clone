@@ -26,7 +26,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponseServerIo) => {
       await runMiddleware(req, res, upload);
       ({ name, ownerId, members } = req.body);
       files = req.file
-    } 
+    }
 
     const formData = new FormData();
     formData.append('name', name);
@@ -38,8 +38,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponseServerIo) => {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
 
-    const channelKey = `group.created`;
-    res?.socket?.server?.io.emit(channelKey, data);
+    if (data) {
+      data.members.forEach((member) => {
+        const groupKey = `group:${member.memberId}:created`;
+        res?.socket?.server?.io.emit(groupKey, data);
+      });
+    }
 
     return res.status(200).json(data);
   } catch (error) {

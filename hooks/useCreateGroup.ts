@@ -1,6 +1,5 @@
 import { axiosInstance } from '@/core/axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
 
 interface Group {
   id: string;
