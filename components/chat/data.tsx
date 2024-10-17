@@ -48,5 +48,12 @@ export const fileColors: Record<string, string> = {
   docx: "bg-blue-500",
   pptx: "bg-purple-500",
   rar: "bg-yellow-500",
+  jpg: "bg-pink-500", // Цвет для изображений JPG
+  jpeg: "bg-pink-500", // Цвет для изображений JPEG
+  png: "bg-pink-500", // Цвет для изображений PNG
+  gif: "bg-pink-500", // Цвет для GIF
+  bmp: "bg-pink-500", // Цвет для BMP
+  svg: "bg-pink-500", // Цвет для SVG
+  webp: "bg-pink-500", // Цвет для WebP
   unknown: "bg-gray-500", // Цвет для неизвестного типа файла
 };

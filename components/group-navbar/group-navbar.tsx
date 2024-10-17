@@ -22,7 +22,7 @@ const GroupNavbar: FC<GroupNavbarProps> = ({ profile, usersToInvite, setIsCreati
     const filteredUsers = usersToInvite.filter((user) =>
         user.name.toLowerCase().includes(searchValue.toLowerCase())
     )
-
+    
     const toggleMember = (user: User) => {
         setSelectedMembers((prev: User[]) => {
             const isSelected = prev.some(member => member.id === user.id)

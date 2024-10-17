@@ -31,7 +31,6 @@ const RightPanel = ({
       : undefined
   const backgroundImageUrl = isChannel(channelData) || isGroup(channelData) ? `${process.env.NEXT_PUBLIC_SERVER_URL}/api/uploads/${channelData.image}` : otherUser?.imageUrl
 
-
   return (
     <div
       ref={menuRef}

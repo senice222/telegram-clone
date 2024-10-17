@@ -4,6 +4,7 @@ import { MessageType } from "@/types/Message";
 import { ChatData } from "@/types/Channel";
 import { User } from "@/types/User";
 import { isChannel, isConversation } from "@/lib/utils";
+import { fileColors } from "../data";
 
 interface MessageProps {
   message: MessageType;
@@ -21,7 +22,10 @@ const Message: FC<MessageProps> = ({ message, channel, profile }) => {
       : channel.memberOne
     : undefined;
   const isOwn = message.memberId === profile.id;
-
+  const truncateUrl = (url: string, maxLength: number) => {
+    if (url?.length <= maxLength) return url;
+    return url?.slice(0, maxLength) + "...";
+  };
   return (
     <div
       key={message.id}
@@ -57,23 +61,49 @@ const Message: FC<MessageProps> = ({ message, channel, profile }) => {
         }`}
       >
         <div className="overflow-auto grid gap-2 h-full grid-cols-2">
-          {message.files?.fileUrls?.map((photo: any, index: number) => (
-            <div
-              key={index}
-              className={`relative mt-2 ${
-                message.files.fileUrls.length % 2 !== 0 &&
-                index === message.files.fileUrls.length - 1
-                  ? "col-span-2"
-                  : ""
-              }`}
-            >
-              <img
-                className="rounded-[12px] max-h-[500px] w-full h-full object-cover"
-                src={`http://localhost:5000/api/uploads/${photo}`}
-                alt={`photo-${index}`}
-              />
-            </div>
-          ))}
+          {
+            message.files.type === "imgs" ? message.files?.fileUrls?.map((photo: any, index: number) => (
+              <div
+                key={index}
+                className={`relative mt-2 ${
+                  message.files.fileUrls.length % 2 !== 0 &&
+                  index === message.files.fileUrls.length - 1
+                    ? "col-span-2"
+                    : ""
+                }`}
+              >
+                <img
+                  className="rounded-[12px] max-h-[500px] w-full h-full object-cover"
+                  src={`http://localhost:5000/api/uploads/${photo}`}
+                  alt={`photo-${index}`}
+                />
+              </div>
+            )) : message.files.fileUrls.map((file: any) => {
+              const iconColor = fileColors[file.mimetype?.split('/')[file.mimetype.split.length - 1]] || fileColors.unknown;
+              if (file) {
+                return (
+                  <div
+                    key={file.originalname}
+                    className={`flex items-center justify-between p-2`}
+                  >
+                    <div
+                      className={`flex items-center ${iconColor} w-[48px] h-[48px] justify-center rounded-[6px]`}
+                    >
+                      <span className="text-white">{file.mimetype?.split('/')[file.mimetype.split.length - 1]}</span>
+                    </div>
+                    <div className="flex flex-col flex-grow ml-2">
+                      <span className="text-white">{truncateUrl(file.originalname, 20)}</span>
+                      <span className="text-[#aaaaaa] text-sm">
+                        {(file.size / (1024 * 1024)).toFixed(2)} MB
+                      </span>
+                    </div>
+                  </div>
+                );
+              } else {
+                return null;
+              }
+            })
+          }
         </div>
         <div className="flex w-full min-h-[32px] mt-1 items-center justify-end">
             <p className="text-[16px] text-white">{message.content}</p>

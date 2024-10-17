@@ -1,4 +1,3 @@
-"use client";
 import React, { useState } from "react";
 import { Smile, Paperclip, SendHorizontal, Image, File } from "lucide-react";
 import Picker from "@emoji-mart/react";
@@ -21,7 +20,7 @@ export interface attachedFile {
   file: File;
   type: string;
 }
-const SendMessage = ({ id, apiUrl }: { id: string, apiUrl: string }) => {
+const SendMessage = ({ id, apiUrl }: { id: string; apiUrl: string }) => {
   const [file, setFile] = useState<File | null>(null);
   const router = useRouter();
   const { onOpen } = useModal();
@@ -34,34 +33,32 @@ const SendMessage = ({ id, apiUrl }: { id: string, apiUrl: string }) => {
   });
   const addFile = (file: attachedFile) => {
     setMessage((prevMessages) => [...prevMessages, file]);
-  }
+  };
 
+  const handlePaperclipClick = () => {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.onchange = handleFileChange;
+    fileInput.click();
+  };
 
-const handlePaperclipClick = () => {
-  const fileInput = document.createElement("input");
-  fileInput.type = "file";
-  fileInput.onchange = handleFileChange;
-  fileInput.click();
-};
+  const handleFileChange = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    const selectedFile = target.files?.[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      onOpen("sendMessage", { file: selectedFile, id, apiUrl });
+    }
+  };
 
-const handleFileChange = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const selectedFile = target.files?.[0];
-  if (selectedFile) {
-    setFile(selectedFile);
-    onOpen("sendMessage", { file: selectedFile, id, apiUrl});
-  }
-};
+  const onPhotoAttaching = () => {
+    handlePaperclipClick();
+  };
 
-const onPhotoAttaching = () => {
-  handlePaperclipClick();
-};
-  
-const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const url = `${process.env.NEXT_PUBLIC_SITE_URL}/api/socket/${apiUrl}`
-      let type = "text"
-      console.log()
+      const url = `${process.env.NEXT_PUBLIC_SITE_URL}/api/socket/${apiUrl}`;
+      let type = "text";
       const body = id.startsWith("-")
         ? { ...values, conversationId: id }
         : { ...values, channelId: id, type };
@@ -108,9 +105,9 @@ const onSubmit = async (values: z.infer<typeof formSchema>) => {
                               <Picker
                                 data={data}
                                 theme="dark"
-                                onSelect={(emo: any) =>
-                                  field.onChange(`${field.value} ${emo.native}`)
-                                }
+                                onEmojiSelect={(emoji: any) => {
+                                  field.onChange(`${field.value}${emoji.native}`);
+                                }}
                               />
                             </PopoverContent>
                           </Popover>
@@ -122,25 +119,34 @@ const onSubmit = async (values: z.infer<typeof formSchema>) => {
 
                           <Popover>
                             <PopoverTrigger>
-                              {/* <button className="h-full cursor-pointer ml-[10px] w-[32px] flex items-center justify-center "> */}
                               <Paperclip
                                 color="rgb(170, 170, 170, 0.8)"
                                 width={24}
-                              // onClick={handlePaperclipClick}
                               />
-                              {/* </button> */}
                             </PopoverTrigger>
                             <PopoverContent
                               side="top"
-
-                              className="mr-[160px] w-[200px] bg-[#212121]/85 backdrop-blur border-0 p-1 rounded-[8px] "
+                              className="mr-[160px] w-[200px] bg-[#212121]/85 backdrop-blur border-0 p-1 rounded-[8px]"
                             >
-                              <div onClick={() => onPhotoAttaching()} className="w-full h-[32px] flex items-center hover:bg-[#000000]/40 rounded-[8px] transition cursor-pointer">
-                                <Image className="ml-2" color="rgb(170, 170, 170)" width={19.6} />
-                                <h2 className="text-sm text-white ml-4">Photo or Video</h2>
+                              <div
+                                onClick={() => onPhotoAttaching()}
+                                className="w-full h-[32px] flex items-center hover:bg-[#000000]/40 rounded-[8px] transition cursor-pointer"
+                              >
+                                <Image
+                                  className="ml-2"
+                                  color="rgb(170, 170, 170)"
+                                  width={19.6}
+                                />
+                                <h2 className="text-sm text-white ml-4">
+                                  Photo or Video
+                                </h2>
                               </div>
                               <div className="w-full h-[32px] flex items-center hover:bg-[#000000]/40 rounded-[8px] transition cursor-pointer mt-1">
-                                <File className="ml-2" color="rgb(170, 170, 170)" width={19.6} />
+                                <File
+                                  className="ml-2"
+                                  color="rgb(170, 170, 170)"
+                                  width={19.6}
+                                />
                                 <h2 className="text-sm text-white ml-4">File</h2>
                               </div>
                             </PopoverContent>
@@ -167,5 +173,3 @@ const onSubmit = async (values: z.infer<typeof formSchema>) => {
 };
 
 export default SendMessage;
-
-/******  0dbc4254-b2b2-44e0-ac2c-7fbca003a593  *******/

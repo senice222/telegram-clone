@@ -4,15 +4,14 @@ import { currentProfilePages } from "@/lib/currentProfilePages";
 import { NextApiResponseServerIo } from "@/types";
 import { NextApiRequest } from "next";
 import multer from "multer";
-import qs from "query-string"; // Ensure FormData is imported correctly
+import qs from "query-string";
 
 export const config = {
   api: {
-    bodyParser: false, // Disabling body parsing to handle multipart
+    bodyParser: false, 
   },
 };
 
-// Multer setup to handle file uploads
 const storage = multer.memoryStorage();
 const upload = multer({ storage }).array("fileUrls", 10);
 
@@ -59,12 +58,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponseServerIo) => {
       ({ content, type, channelId, files } = body);
       files = files || [];
     }
-    console.log(channelId)
-    // Validate required fields
-    // if (!content || !type || !channelId) {
-    //     console.log(content, type, channelId, 222)
-    //   return res.status(400).json({ message: "Content, type, and channelId are required" });
-    // }
 
     const currentProfile = await currentProfilePages(req);
 
@@ -81,7 +74,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponseServerIo) => {
     formData.append("type", type);
     formData.append("channelId", channelId);
 
-    // Safely loop through files and handle potential undefined cases
     files.forEach((file) => {
       if (file && file.buffer && file.mimetype && file.originalname) {
         const blob = new Blob([file.buffer], { type: file.mimetype });

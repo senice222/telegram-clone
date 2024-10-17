@@ -15,14 +15,14 @@ const Header: FC<ChatHeaderProps> = ({ chatType, channelData, profile }) => {
   const [isVisible, setIsVisible] = useState(true);
   const [showContent, setShowContent] = useState(true);
   const router = useRouter()
-  console.log(channelData)
+
   const isUserMember =
     isChannel(channelData)
       ? channelData.members.some((item: ChannelMember) => item.profileId === profile.id)
       : isGroup(channelData)
         ? channelData.members.some((item: Member) => item.memberId === profile.id)
         : false;
-
+  
   const otherUser: User | undefined =
     isConversation(channelData)
       ? (profile.id === channelData.memberOne.id ? channelData.memberTwo : channelData.memberOne)
