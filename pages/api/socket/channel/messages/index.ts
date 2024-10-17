@@ -75,7 +75,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponseServerIo) => {
     formData.append("channelId", channelId);
 
     files.forEach((file) => {
-      if (file && file.buffer && file.mimetype && file.originalname) {
+      if (file && file.buffer && file.mimetype && file.originalname) { // ??? условие
         const blob = new Blob([file.buffer], { type: file.mimetype });
         formData.append("fileUrls", blob, file.originalname);
       } else {
