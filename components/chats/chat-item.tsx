@@ -1,4 +1,3 @@
-"use client"
 import React, { Dispatch, FC, SetStateAction } from 'react'
 import { motion, useAnimation } from "framer-motion"
 import { ChatData } from '@/types/Channel';
@@ -12,20 +11,21 @@ interface ChatItemProps {
     data: ChatData
     setIsSearching?: Dispatch<SetStateAction<boolean>>
     profile: User
-    type: "conversation" | "channel"
 }
 
-const ChatItem: FC<ChatItemProps> = ({ type, profile, data, setIsSearching }) => {
+const ChatItem: FC<ChatItemProps> = ({ profile, data, setIsSearching }) => {
     const controls = useAnimation()
     const router = useRouter()
 
     const otherUser: User | undefined = isConversation(data)
-        ? (profile.id === data.memberOne.id ? data.memberTwo : data.memberOne)
-        : undefined
+        ? (profile.id === data.memberOne?.id ? data.memberTwo : data.memberOne)
+        : data.type === 'user'
+            ? data as User
+            : undefined
 
     const handleCreateConversation = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation()
-        if (!isChannel(data)) {
+        if (!isChannel(data) && data.type !== 'user') {
             try {
                 const url = qs.stringifyUrl({
                     url: "/api/create-conversation",
@@ -45,8 +45,13 @@ const ChatItem: FC<ChatItemProps> = ({ type, profile, data, setIsSearching }) =>
     }
 
     const handleClick = () => {
-        router.push(data.id)
-        if (setIsSearching) setIsSearching(false)
+        if (data.type === 'user') {
+            router.push(`/profile/${data.id}`); // Redirect to the user's profile
+        } else {
+            router.push(data.id);
+        }
+
+        if (setIsSearching) setIsSearching(false);
 
         controls.start({
             scale: [1, 1.05, 1],
@@ -54,9 +59,9 @@ const ChatItem: FC<ChatItemProps> = ({ type, profile, data, setIsSearching }) =>
                 duration: 0.3,
                 ease: "easeInOut",
             },
-        })
+        });
     }
-    
+
     return (
         <motion.div
             onClick={handleClick}
@@ -71,7 +76,8 @@ const ChatItem: FC<ChatItemProps> = ({ type, profile, data, setIsSearching }) =>
                                 isChannel(data) || isGroup(data)
                                     ? `${process.env.NEXT_PUBLIC_SERVER_URL}/api/uploads/${data.image}`
                                     : otherUser?.imageUrl
-                            } alt="User Avatar"
+                            }
+                            alt="Avatar"
                             height={40}
                             width={40}
                             className='w-[40px] h-[40px] rounded-full object-cover'
@@ -82,13 +88,14 @@ const ChatItem: FC<ChatItemProps> = ({ type, profile, data, setIsSearching }) =>
                             {isChannel(data) || isGroup(data) ? data?.name : otherUser?.name || ''}
                         </p>
                         {!isChannel(data) && (
-                            <p className="text-[rgb(160,160,160)] text-sm">Фак, все рав...</p>
+                            <p className="text-[rgb(160,160,160)] text-sm">{data?.lastMessage ? data?.lastMessage : 'No messages yet'}</p>
                         )}
                     </div>
                 </div>
                 {
-                    !isChannel(data) && data.hasConversation === false && (
+                    !isChannel(data) && data?.hasConversation === false && data.type !== 'user' && (
                         <button
+
                             onClick={(e) => handleCreateConversation(e)}
                             className='w-[70px] h-[36px] rounded-xl text-[10px] font-medium text-white bg-[rgb(135,116,225)] mr-2 hover:bg-[rgb(123,113,198)] transition'
                         >
@@ -101,4 +108,4 @@ const ChatItem: FC<ChatItemProps> = ({ type, profile, data, setIsSearching }) =>
     )
 }
 
-export default ChatItem
+export default ChatItem;

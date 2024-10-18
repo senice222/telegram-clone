@@ -44,7 +44,7 @@ const SearchNavbar = ({ profile, searchValue, setIsSearching }: SearchNavbarProp
 
         fetchResults();
     }, [debouncedValue]);
-
+    console.log(filteredResults)
     return (
         <motion.div
             className="flex flex-col h-full text-primary w-full bg-[rgb(33,33,33)] relative"
@@ -55,7 +55,7 @@ const SearchNavbar = ({ profile, searchValue, setIsSearching }: SearchNavbarProp
         >
             {filteredResults.length > 0 ? (
                 filteredResults.map((item, index) => (
-                    <ChatItem key={index} type={item.type} profile={profile} setIsSearching={setIsSearching} data={item} />
+                    <ChatItem key={index} profile={profile} setIsSearching={setIsSearching} data={item} />
                 ))
             ) : (
                 <div className='flex flex-col gap-3 select-none h-full items-center justify-center'>

@@ -1,18 +1,14 @@
 'use client';
-import { UserButton } from "@clerk/nextjs";
-import { ScrollArea } from "../ui/scroll-area";
 import { FC, useEffect, useState } from "react";
-import ManageChannels from "../manage-channels";
 import SearchChatsInput from "../search/search-chats-input";
 import SearchNavbar from "../search/search-navbar";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { User } from "@/types/User";
-import { useSocket } from '@/providers/socket-provider';
-import ChatItem from "../chats/chat-item";
 import { ConversationType } from "@/types/Channel";
 import GroupNavbar from "../group-navbar/group-navbar";
 import DefaultSidebar from "./default-sidebar";
-import { useGroups } from "@/hooks/useGroup";
+import { useAllChats } from "@/hooks/use-all-chats";
+import Pending from "../chat/pending/pending";
 
 interface SidebarProps {
     profile: User
@@ -25,30 +21,13 @@ const NavigationSidebar: FC<SidebarProps> = ({ profile }) => {
     const [isCreatingGroup, setIsCreatingGroup] = useState<boolean>(false)
     const channels = profile?.channels
     const [isFirstRender, setIsFirstRender] = useState(true);
-    const {data: groups} = useGroups(profile.id)
-    
+    const { data: allChats, isLoading } = useAllChats(profile.id);
+
     useEffect(() => {
         setIsFirstRender(false);
     }, []);
 
-    if (!groups) return null
-
-    const allChats = [
-        ...(profile?.channels || []).map(channel => ({ ...channel, type: 'channel' })),
-        ...(profile?.conversationsReceived || []).map((conversation: ConversationType) => ({ ...conversation, type: 'conversation' })),
-        ...(profile?.conversationsInitiated || []).map((conversation: ConversationType) => ({ ...conversation, type: 'conversation' })),
-        ...groups
-    ];
-    const conversations = [
-        ...(profile?.conversationsReceived || []).map((conversation: ConversationType) => ({ ...conversation, type: 'conversation' })),
-        ...(profile?.conversationsInitiated || []).map((conversation: ConversationType) => ({ ...conversation, type: 'conversation' })),
-    ]
-    const convMemberNotCurrent = conversations
-        .filter((conv) => conv.memberOneId === profile.id || conv.memberTwoId === profile.id)
-        .map((conv) => (conv.memberOneId === profile.id ? conv.memberTwo : conv.memberOne));
-    
-    
-    if (!channels) return null
+    if (isLoading || !channels || !allChats) return <Pending />
 
     const navbarComponents = {
         search: (
@@ -63,7 +42,7 @@ const NavigationSidebar: FC<SidebarProps> = ({ profile }) => {
                 <SearchNavbar profile={profile} setIsSearching={setIsSearching} searchValue={searchValue} />
             </>
         ),
-        createGroup: <GroupNavbar profile={profile} usersToInvite={convMemberNotCurrent} setIsCreatingGroup={setIsCreatingGroup} />,
+        createGroup: <GroupNavbar profile={profile} setIsCreatingGroup={setIsCreatingGroup} />,
         default: <DefaultSidebar
             isFirstRender={isFirstRender}
             searchValue={searchValue}

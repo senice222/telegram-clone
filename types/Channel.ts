@@ -16,6 +16,7 @@ export interface ChannelType {
     updatedAt: string,
     members: ChannelMember[]
     type: 'channel'
+    lastMessage: string
 }
 
 export type ConversationType = {
@@ -24,9 +25,10 @@ export type ConversationType = {
     id: string;
     hasConversation?: boolean;
     type: 'conversation';
+    lastMessage: string
 }
 
-export type ChatData = ChannelType | ConversationType | Group
+export type ChatData = ChannelType | ConversationType | Group | User
 
 export interface Channel {
     channelId: string,

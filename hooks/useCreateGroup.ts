@@ -16,7 +16,7 @@ export const useCreateGroup = (onSuccess?: () => void) => {
     mutationFn: async (formData: FormData) => {
       const { data } = await axiosInstance.post(`${process.env.NEXT_PUBLIC_SITE_URL}/api/socket/group`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      }); 
       return data;
     },
     onSuccess: (data: Group) => {

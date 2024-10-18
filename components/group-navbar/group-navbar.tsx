@@ -6,17 +6,25 @@ import { User } from '@/types/User'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { useModal } from '@/hooks/use-modal-hooks'
+import { ConversationType } from '@/types/Channel'
 
 interface GroupNavbarProps {
-    usersToInvite: User[];
     setIsCreatingGroup: Dispatch<SetStateAction<boolean>>
     profile: User
 }
 
-const GroupNavbar: FC<GroupNavbarProps> = ({ profile, usersToInvite, setIsCreatingGroup }) => {
+const GroupNavbar: FC<GroupNavbarProps> = ({ profile, setIsCreatingGroup }) => {
     const [selectedMembers, setSelectedMembers] = useState<User[]>([])
     const [searchValue, setSearchValue] = useState<string>('')
     const { onOpen } = useModal()
+    const conversations = [
+        ...(profile?.conversationsReceived || []).map((conversation: ConversationType) => ({ ...conversation, type: 'conversation' })),
+        ...(profile?.conversationsInitiated || []).map((conversation: ConversationType) => ({ ...conversation, type: 'conversation' })),
+    ]
+    
+    const usersToInvite = conversations
+        .filter((conv) => conv.memberOneId === profile.id || conv.memberTwoId === profile.id)
+        .map((conv) => (conv.memberOneId === profile.id ? conv.memberTwo : conv.memberOne));
     const isDisabled = selectedMembers.length === 0;
 
     const filteredUsers = usersToInvite.filter((user) =>

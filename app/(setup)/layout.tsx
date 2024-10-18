@@ -8,7 +8,7 @@ const SetupLayout = async ({ children }: { children: React.ReactNode }) => {
     
     return (
         <div className="h-full w-full flex">
-            <div className="hidden md:flex h-screen w-[25vw] z-30 flex-col">
+            <div className="hidden md:flex h-screen w-[25vw] bg-[rgb(33,33,33)] z-30 flex-col">
                 <NavigationSidebar profile={profile} />
                 {/* <GroupNavbar /> */}
             </div>

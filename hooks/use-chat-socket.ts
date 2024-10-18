@@ -1,6 +1,6 @@
-import {useSocket} from "@/providers/socket-provider";
-import {useQueryClient} from "@tanstack/react-query";
-import {useEffect} from "react";
+import { useSocket } from "@/providers/socket-provider";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 type ChatSocketProps = {
     addKey: string;
@@ -10,8 +10,8 @@ type ChatSocketProps = {
 }
 
 
-export const useChatSocket = ({addKey, updateKey, queryKey, groupKey}: ChatSocketProps) => {
-    const {socket} = useSocket()
+export const useChatSocket = ({ addKey, updateKey, queryKey, groupKey }: ChatSocketProps) => {
+    const { socket } = useSocket()
     const queryClient = useQueryClient()
 
     useEffect(() => {
@@ -19,14 +19,15 @@ export const useChatSocket = ({addKey, updateKey, queryKey, groupKey}: ChatSocke
             return;
         }
         socket.on(groupKey, (newGroup: any) => {
-            queryClient.setQueryData(['groups'], (oldData: any) => [
+            console.log("group created")
+            queryClient.setQueryData(['allChats'], (oldData: any) => [
                 newGroup,
                 ...(oldData || []),
             ]);
         });
         socket.on(addKey, (message: any) => {
             queryClient.setQueryData([queryKey], (oldData: any) => {
-                if (!oldData ||!oldData.pages || oldData.length === 0) {
+                if (!oldData || !oldData.pages || oldData.length === 0) {
                     return {
                         pages: [{
                             items: [message]
@@ -43,10 +44,18 @@ export const useChatSocket = ({addKey, updateKey, queryKey, groupKey}: ChatSocke
                 }
 
                 return {
-                   ...oldData,
+                    ...oldData,
                     pages: newData
                 }
             })
+            queryClient.setQueryData(['allChats'], (chats: any) => {
+                return chats.map((chat: any) => {
+                    if (chat.id === message.conversationId || chat.id === message.channelId || chat.id === message.groupId) {
+                        return { ...chat, lastMessage: message.content };
+                    }
+                    return chat;
+                });
+            });
         })
 
         return () => {

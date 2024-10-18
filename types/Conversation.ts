@@ -12,4 +12,5 @@ export interface ConversationType {
     memberOneId: string;
     memberTwo: User;
     memberTwoId: string;
+    hasConversation: boolean;
 }

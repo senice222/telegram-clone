@@ -13,7 +13,7 @@ interface DefaultSidebarProps {
     setSearchValue: Dispatch<SetStateAction<string>>
     isSearching: boolean
     setIsSearching: Dispatch<SetStateAction<boolean>>
-    allChats: { type: "conversation" | "channel"; channel?: any; [key: string]: any }[]
+    allChats: []
     profile: User
     setIsCreatingGroup: Dispatch<SetStateAction<boolean>>
     hovered: boolean
@@ -30,6 +30,8 @@ const DefaultSidebar: FC<DefaultSidebarProps> = ({
     setIsCreatingGroup,
     hovered,
 }) => {
+    if (!allChats) return null;
+
     return (
         <>
             <SearchChatsInput
@@ -41,7 +43,7 @@ const DefaultSidebar: FC<DefaultSidebarProps> = ({
             />
             <motion.div
                 initial={isFirstRender ? false : { opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
+                animate={isFirstRender ? false : {opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.3 }}
                 className="flex flex-col h-full text-primary w-full bg-[rgb(33,33,33)] relative"
@@ -49,12 +51,12 @@ const DefaultSidebar: FC<DefaultSidebarProps> = ({
                 <ScrollArea className="flex flex-col flex-1 w-full">
                     <div className="p-2 h-full">
                         {allChats.length > 0 ? (
-                            allChats.map((item, index) => (
+                            allChats.map((item: any, index: number) => (
                                 <ChatItem
                                     key={index}
                                     type={item.type}
                                     profile={profile}
-                                    data={item.type === "channel" ? item.channel : item}
+                                    data={item}
                                     setIsSearching={setIsSearching}
                                 />
                             ))

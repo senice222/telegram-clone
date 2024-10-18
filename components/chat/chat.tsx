@@ -3,10 +3,8 @@ import React, { ElementRef, FC, useEffect, useRef, useState } from "react";
 import SendMessage from "./send-message";
 import Header from "./header";
 import RightPanel from "./right-panel";
-import { MessageType } from "@/types/Message";
 import { ChatProps } from "@/types/Channel";
 import { useChatQuery } from "@/hooks/use-channel-query";
-import Message from "@/components/chat/messages/message";
 import { useChatSocket } from "@/hooks/use-chat-socket";
 import { Loader2 } from "lucide-react";
 import { useChatScroll } from "@/hooks/use-chat-scroll";
@@ -15,6 +13,7 @@ import { Member } from "@/types/Group";
 import { ConversationType } from "@/types/Conversation";
 import Pending from "./pending/pending";
 import Error from "./error/error";
+import MessageList from "./messages/message-list";
 
 const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile }) => {
     const queryKey = `${chatType}:${channelData?.id}`
@@ -114,21 +113,7 @@ const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile 
                             className="w-[728px] max-lg:w-[90%] h-full overflow-hidden"
                             ref={chatRef}
                         >
-                            <div className="h-[calc(100%-130px)] overflow-y-auto p-4">
-                                {data?.pages?.map((group, i) => (
-                                    <div key={i}>
-                                        {group.items.map((message: MessageType) => (
-                                            <Message
-                                                key={message.id}
-                                                message={message}
-                                                channel={channelData}
-                                                profile={profile}
-                                            />
-                                        ))}
-                                    </div>
-                                ))}
-                                <div ref={bottomRef} />
-                            </div>
+                            <MessageList data={data} channelData={channelData} profile={profile} bottomRef={bottomRef} />
                             {
                                 isChannel(channelData) && profile.id === channelData.ownerId ? (
                                     <SendMessage

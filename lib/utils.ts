@@ -29,12 +29,12 @@ export async function getCurrentChannel(channelId: string) {
 }
 
 export const isConversation = (data: ChatData): data is ConversationType => {
-  return data.type === 'conversation'
+  return data?.type === 'conversation'
 }
 
 export const isChannel = (data: ChatData): data is ChannelType => {
-  return data.type === 'channel'
+  return data?.type === 'channel'
 }
 export const isGroup = (data: ChatData): data is Group => {
-  return data.type === 'group';
+  return data?.type === 'group';
 }

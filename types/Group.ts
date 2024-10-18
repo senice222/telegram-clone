@@ -1,3 +1,5 @@
+import { User } from "./User"
+
 export interface Group {
     id: string
     name: string
@@ -9,6 +11,8 @@ export interface Group {
     owner: Owner
     members: Member[]
     messages: any[]
+    lastMessage: string;
+    hasConversation: boolean
 }
 
 export interface Owner {
@@ -27,4 +31,5 @@ export interface Member {
     id: string
     groupId: string
     memberId: string
+    profile: User
 }

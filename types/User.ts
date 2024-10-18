@@ -16,4 +16,6 @@ export interface User {
         profileId: string,
         channel: ChannelType
     }]
+    lastMessage: string;
+    hasConversation: boolean
 }

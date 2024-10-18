@@ -59,10 +59,14 @@ const SendMessage = ({ id, apiUrl }: { id: string; apiUrl: string }) => {
     try {
       const url = `${process.env.NEXT_PUBLIC_SITE_URL}/api/socket/${apiUrl}`;
       let type = "text";
-      const body = id.startsWith("-")
-        ? { ...values, conversationId: id }
-        : { ...values, channelId: id, type };
-
+      let body;
+      if (id.startsWith("-1")) {
+        body = { ...values, groupId: id, type };
+      } else if (id.startsWith("-")) {
+        body = { ...values, conversationId: id };
+      } else {
+        body = { ...values, channelId: id, type };
+      }
       await axios.post(url, body);
       form.reset();
       router.refresh();

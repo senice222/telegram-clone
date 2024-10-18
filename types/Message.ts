@@ -14,7 +14,7 @@ export interface MessageType {
     content: string,
     files: {
         type: string,
-        fileUrls: Strin[]
+        fileUrls: String[]
     },
     channelId: string
     deleted: boolean

@@ -52,23 +52,7 @@ const Page = async ({ params }: ChanelIdParams) => {
     const CurrentChat = chatObj[data?.type as ChatTypes]
     return (
         <div>
-            {data?.type === 'channel' ? (
-                <Chat
-                    chatType="channel"
-                    channelData={data}
-                    profile={currentUser}
-                    apiUrl="/api/get-channel/messages"
-                    paramKey="channelId"
-                />
-            ) : (
-                <Chat
-                    chatType="conversation"
-                    channelData={data}
-                    profile={currentUser}
-                    apiUrl="/api/get-conversation/messages"
-                    paramKey="conversationId"
-                />
-            )}
+            {CurrentChat}
         </div>
     )
 }
