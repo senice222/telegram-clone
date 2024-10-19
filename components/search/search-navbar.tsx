@@ -44,7 +44,7 @@ const SearchNavbar = ({ profile, searchValue, setIsSearching }: SearchNavbarProp
 
         fetchResults();
     }, [debouncedValue]);
-    console.log(filteredResults)
+
     return (
         <motion.div
             className="flex flex-col h-full text-primary w-full bg-[rgb(33,33,33)] relative"

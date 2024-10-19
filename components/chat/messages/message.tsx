@@ -31,7 +31,7 @@ const Message: FC<MessageProps> = ({ message, channel, profile }) => {
     return url?.slice(0, maxLength) + "...";
   };
   const timestamp = format(new Date(message.createdAt), 'PPpp');
-
+  console.log(message.files?.fileUrls)
   return (
     <div
       key={message.id}
@@ -77,7 +77,7 @@ const Message: FC<MessageProps> = ({ message, channel, profile }) => {
               >
                 <img
                   className="rounded-[12px] max-h-[500px] w-full h-full object-cover"
-                  src={`${process.env.NEXT_PUBLIC_SERVER_URL}/api/uploads/${photo}`}
+                  src={`${process.env.NEXT_PUBLIC_SERVER_URL}/api/uploads/${photo.filename}`}
                   alt={`photo-${index}`}
                 />
               </div>

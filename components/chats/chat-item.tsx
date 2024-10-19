@@ -25,7 +25,7 @@ const ChatItem: FC<ChatItemProps> = ({ profile, data, setIsSearching }) => {
 
     const handleCreateConversation = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation()
-        if (!isChannel(data) && data.type !== 'user') {
+        if (!isChannel(data) && data.type === 'user') {
             try {
                 const url = qs.stringifyUrl({
                     url: "/api/create-conversation",
@@ -61,7 +61,7 @@ const ChatItem: FC<ChatItemProps> = ({ profile, data, setIsSearching }) => {
             },
         });
     }
-
+   
     return (
         <motion.div
             onClick={handleClick}
@@ -93,7 +93,7 @@ const ChatItem: FC<ChatItemProps> = ({ profile, data, setIsSearching }) => {
                     </div>
                 </div>
                 {
-                    !isChannel(data) && data?.hasConversation === false && data.type !== 'user' && (
+                    !isChannel(data) && data?.hasConversation === false && (
                         <button
 
                             onClick={(e) => handleCreateConversation(e)}
