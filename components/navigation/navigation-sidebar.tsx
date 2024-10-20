@@ -24,7 +24,7 @@ const NavigationSidebar: FC<SidebarProps> = ({ profile }) => {
     const { data: allChats, isLoading } = useAllChats(profile.id);
 
     useEffect(() => {
-        setIsFirstRender(false);
+        setIsFirstRender(true);
     }, []);
 
     if (isLoading || !channels || !allChats) return <Pending />

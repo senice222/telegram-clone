@@ -1,6 +1,6 @@
 "use client";
 import React, { ElementRef, FC, useEffect, useRef, useState } from "react";
-import SendMessage from "./send-message";
+import SendMessage from "./send-message/send-message";
 import Header from "./header";
 import RightPanel from "./right-panel";
 import { ChatProps } from "@/types/Channel";

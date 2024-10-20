@@ -54,7 +54,6 @@ const DefaultSidebar: FC<DefaultSidebarProps> = ({
                             allChats.map((item: any, index: number) => (
                                 <ChatItem
                                     key={index}
-                                    type={item.type}
                                     profile={profile}
                                     data={item}
                                     setIsSearching={setIsSearching}

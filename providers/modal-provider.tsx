@@ -1,5 +1,5 @@
 "use client";
-import SendImageModal from "@/components/chat/modals/sendImage.modal";
+import SendImageModal from "@/components/modals/send-image-modal/send-image-modal";
 import CreateChannelModal from "@/components/modals/create-channel-modal";
 import CreateGroupModal from "@/components/modals/create-group-modal";
 import { User } from "@/types/User";

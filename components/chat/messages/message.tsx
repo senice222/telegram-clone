@@ -31,7 +31,7 @@ const Message: FC<MessageProps> = ({ message, channel, profile }) => {
     return url?.slice(0, maxLength) + "...";
   };
   const timestamp = format(new Date(message.createdAt), 'PPpp');
-  console.log(message.files?.fileUrls)
+
   return (
     <div
       key={message.id}

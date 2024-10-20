@@ -1,7 +1,7 @@
 import { User } from '@/types/User';
 import { Dispatch, SetStateAction } from 'react';
 import { create } from 'zustand'
-import { attachedFile } from '@/components/chat/send-message';
+import { attachedFile } from '@/components/chat/send-message/send-message';
 
 export type ModalType =
     | "createChannel"

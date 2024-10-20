@@ -35,7 +35,7 @@ const ChatItem: FC<ChatItemProps> = ({ profile, data, setIsSearching }) => {
                     },
                 })
                 const { data: conversation } = await axiosInstance.post(url)
-                router.push(`/conversation/${conversation.id}`)
+                router.push(`/${conversation.id}`)
                 router.refresh()
                 if (setIsSearching) setIsSearching(false)
             } catch (e) {
