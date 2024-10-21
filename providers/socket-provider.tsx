@@ -41,6 +41,7 @@ export const SocketProvider = ({ children, id }: { children: React.ReactNode, id
             setIsConnected(false);
         });
         socketInstance.on('user_status_update', (data: { id: string, status: string }) => {
+            console.log(`User ${data.id} status updated to ${data.status}`);
             queryClient.setQueryData(['allChats'], (oldChats: any) => {
                 if (!oldChats) return [];
 

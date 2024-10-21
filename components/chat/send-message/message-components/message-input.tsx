@@ -12,7 +12,7 @@ const formSchema = z.object({
 
 interface MessageInputProps {
     form: UseFormReturn<z.infer<typeof formSchema>>;
-    handlePaperclipClick: () => void;
+    handlePaperclipClick: (type: string) => void;
     isSubmitting: boolean;
     handleSubmit: any
 }

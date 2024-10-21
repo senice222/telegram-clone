@@ -22,12 +22,11 @@ const NavigationSidebar: FC<SidebarProps> = ({ profile }) => {
     const channels = profile?.channels
     const [isFirstRender, setIsFirstRender] = useState(true);
     const { data: allChats, isLoading } = useAllChats(profile.id);
-    console.log(allChats);
 
     useEffect(() => {
         setIsFirstRender(true);
     }, []);
-
+    
     if (isLoading || !channels || !allChats) return <Pending />
 
     const navbarComponents = {

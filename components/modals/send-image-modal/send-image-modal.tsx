@@ -39,7 +39,7 @@ const SendImageModal = () => {
   }, [data]);
 
   useEffect(() => {
-      setTypeMsg(data.defaultType ? data.defaultType : "imgs");
+    setTypeMsg(data.defaultType ? data.defaultType : "imgs");
   }, [data.defaultType])
 
   const handleDeletePhoto = (index: number) => {
@@ -51,9 +51,9 @@ const SendImageModal = () => {
     fileInput.type = "file";
 
     if (typeMsg === "imgs") {
-      fileInput.accept = "image/*"; 
+      fileInput.accept = "image/*";
     } else {
-      fileInput.accept = ""; 
+      fileInput.accept = "";
     }
 
     fileInput.onchange = (event: Event) => {
@@ -68,7 +68,7 @@ const SendImageModal = () => {
             url: url,
             name: selectedFile.name,
             size: selectedFile.size,
-            type: selectedFile.type, 
+            type: selectedFile.type,
           },
         ]);
       }
@@ -92,7 +92,6 @@ const SendImageModal = () => {
       await axios.post(url, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      console.log("Сообщение отправлено успешно");
       handleClose();
     } catch (error) {
       console.error("Ошибка при отправке сообщения:", error);

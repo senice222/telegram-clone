@@ -35,8 +35,7 @@ const DefaultSidebar: FC<DefaultSidebarProps> = ({
     const lastMessageUpdateKey = `user:${profile.id}:lastMessageUpdate`
     const groupKey = `group:${profile.id}:created`;
     useSidebarSocket({lastMessageUpdateKey, groupKey})
-    console.log(allChats);
-    
+        
     return (
         <>
             <SearchChatsInput
@@ -66,9 +65,9 @@ const DefaultSidebar: FC<DefaultSidebarProps> = ({
                             ))
                         ) : (
                             <div className="flex flex-col gap-3 select-none h-full items-center justify-center">
-                                <p className="text-[#686c72]">No results</p>
+                                <p className="text-[#686c72]">No chats.</p>
                                 <div className="flex flex-col items-center">
-                                    <p className="text-[#aaaaaa] text-[.875rem]">There were no results.</p>
+                                    <p className="text-[#aaaaaa] text-[.875rem]">Find conversations.</p>
                                     <p className="text-[#aaaaaa] text-[.875rem]">Try a new search.</p>
                                 </div>
                             </div>

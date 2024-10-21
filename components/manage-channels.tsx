@@ -77,10 +77,6 @@ const ManageChannels: FC<ManageChannelsProps> = ({ hovered, profile, setIsCreati
                                 <Users stroke="rgb(170,170,170)" className="w-5 h-5" />
                                 New Group
                             </li>
-                            <li className="flex rounded-[.375rem] h-[32px] items-center gap-2 font-medium hover:bg-gray-700 p-2 text-sm cursor-pointer hover:bg-[rgb(0,0,0,0.4)] transition">
-                                <MessageCircle stroke="rgb(170,170,170)" className="w-5 h-5" />
-                                New Message
-                            </li>
                         </ul>
                     </motion.div>
                 )}

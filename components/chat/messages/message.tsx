@@ -56,11 +56,10 @@ const Message: FC<MessageProps> = ({ message, channel, profile }) => {
   const handleSave = async () => {
     setIsEditing(false);
     try {
-      const { data } = await axios.patch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/socket/conversation/messages/${message.id}`, {
+      await axios.patch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/socket/conversation/messages/${message.id}`, {
         content: newMessage,
         owner: message.memberId
       });
-      console.log(data)
     } catch (e) {
       console.log("error editing message", e)
     }
