@@ -56,9 +56,14 @@ const handler = async (req, res) => {
     });
 
     const groupKey = `group:${data.groupId}:messages`;
-    console.log(groupKey)
-    res?.socket?.server?.io.emit(groupKey, data);
+    const lastMessageKey = `user:${currentProfile.id}:lastMessageUpdate`;
 
+    res?.socket?.server?.io.emit(groupKey, data);
+    res?.socket?.server?.io.emit(lastMessageKey, {
+      groupId: data.groupId,
+      lastMessage: data.content,
+    });
+    
     return res.status(200).json(data);
   } catch (error) {
     console.error("Ошибка при отправке сообщения:", error);

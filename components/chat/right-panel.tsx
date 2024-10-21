@@ -4,16 +4,22 @@ import Media from "./chat-tabs/media";
 import Files from "./chat-tabs/files";
 import Links from "./chat-tabs/links";
 import { Tabs, Tab } from "@nextui-org/tabs";
+import {MessageType} from "@/types/Message";
 import { isChannel, isConversation, isGroup } from "@/lib/utils";
 import { User } from "@/types/User";
-import { ChannelType, ChatData } from "@/types/Channel";
+import { ChatData } from "@/types/Channel";
 
 interface RightPanelProps {
   isMenuOpen: boolean;
   setMenuOpen: (value: boolean) => void;
   menuRef: React.RefObject<HTMLDivElement>;
   channelData: ChatData;
-  profile: User
+  profile: User;
+  categorizedMessages: {
+    media: MessageType[];
+    files: MessageType[];
+    links: MessageType[];
+  }
 }
 
 const RightPanel = ({
@@ -21,7 +27,8 @@ const RightPanel = ({
   setMenuOpen,
   menuRef,
   channelData,
-  profile
+  profile,
+  categorizedMessages
 }: RightPanelProps) => {
   if (!channelData) return null;
 
@@ -70,13 +77,13 @@ const RightPanel = ({
         <div className="flex w-full flex-col">
           <Tabs className="mt-2" variant="underlined" color="success" aria-label="Options" fullWidth>
             <Tab key="media" title="Media">
-              <Media />
+              <Media media={categorizedMessages?.media}/>
             </Tab>
             <Tab key="files" title="Files">
-              <Files />
+              <Files files={categorizedMessages?.files}/>
             </Tab>
             <Tab key="links" title="Links">
-              <Links />
+              <Links links={categorizedMessages?.links}/>
             </Tab>
           </Tabs>
         </div>

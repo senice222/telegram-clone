@@ -15,7 +15,6 @@ interface MessageListProps {
 const MessageList: FC<MessageListProps> = ({ data, channelData, profile, bottomRef }) => {
   return (
     <div className="h-[calc(100%-130px)] overflow-y-auto p-4">
-
       {data?.pages?.map((group: any, i: number) => (
         <div key={i}>
           {group.items.map((message: MessageType) => (

@@ -6,6 +6,7 @@ import ChatItem from '../chats/chat-item'
 import { UserButton } from '@clerk/nextjs'
 import ManageChannels from '../manage-channels'
 import { User } from '@/types/User'
+import { useSidebarSocket } from '@/hooks/use-sidebar-socket'
 
 interface DefaultSidebarProps {
     isFirstRender: boolean
@@ -31,7 +32,11 @@ const DefaultSidebar: FC<DefaultSidebarProps> = ({
     hovered,
 }) => {
     if (!allChats) return null;
-
+    const lastMessageUpdateKey = `user:${profile.id}:lastMessageUpdate`
+    const groupKey = `group:${profile.id}:created`;
+    useSidebarSocket({lastMessageUpdateKey, groupKey})
+    console.log(allChats);
+    
     return (
         <>
             <SearchChatsInput

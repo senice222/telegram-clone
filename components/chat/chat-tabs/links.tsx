@@ -12,7 +12,7 @@ const links = [
     "https://codepen.io/",
     "https://www.google.com/search?q=react+tutorial",
   ];
-const Links = () => {
+const Links = ({links} : {links: MessageType[]}) => {
     const truncateUrl = (url: string, maxLength: number) => {
         if (url.length <= maxLength) return url;
         return url.slice(0, maxLength) + "...";

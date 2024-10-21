@@ -9,6 +9,7 @@ export interface User {
     createdAt: string,
     conversationsReceived: any,
     conversationsInitiated: any,
+    online: string,
     type: "user"
     lastSeen: string,
     channels: [{

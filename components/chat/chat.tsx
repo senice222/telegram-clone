@@ -19,12 +19,11 @@ const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile 
     const queryKey = `${chatType}:${channelData?.id}`
     const addKey = `${chatType}:${channelData?.id}:messages`
     const updateKey = `${chatType}:${channelData?.id}:messages:update`
-    const groupKey = `group:${profile.id}:created`;
-
+   
     const bottomRef = useRef<ElementRef<"div">>(null)
     const chatRef = useRef<ElementRef<"div">>(null)
     const headerRef = useRef<HTMLDivElement | null>(null);
-
+    
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement | null>(null);
     const paramValue = channelData?.id
@@ -35,7 +34,7 @@ const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile 
         paramKey,
         paramValue
     })
-    useChatSocket({ queryKey, addKey, updateKey, groupKey })
+    useChatSocket({ queryKey, addKey, updateKey })
     useChatScroll({
         chatRef,
         bottomRef,
@@ -110,7 +109,7 @@ const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile 
                         )}
 
                         <div
-                            className="w-[728px] max-lg:w-[90%] h-full overflow-hidden"
+                            className="w-[728px] max-lg:w-[90%] h-full overflow-auto"
                             ref={chatRef}
                         >
                             <MessageList data={data} channelData={channelData} profile={profile} bottomRef={bottomRef} />
@@ -143,6 +142,7 @@ const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile 
                 isMenuOpen={isMenuOpen}
                 setMenuOpen={setIsMenuOpen}
                 profile={profile}
+                categorizedMessages={data?.pages?.[0].categorizedMessages}
             />
         </div>
     );

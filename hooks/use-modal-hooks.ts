@@ -17,6 +17,7 @@ interface ModalData {
     setIsCreatingGroup?: Dispatch<SetStateAction<boolean>>,
     file?: File,
     id?: string,
+    defaultType?: string;
     
     // query?: Record<string, any>
 }

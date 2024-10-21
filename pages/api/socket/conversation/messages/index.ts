@@ -53,9 +53,18 @@ const handler = async (req, res) => {
     const { data } = await axiosInstance.patch(url, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
+    const currentUserId = data.memberId
+    const recipientId = data.conversation.memberOneId === currentUserId
+      ? data.conversation.memberTwoId
+      : data.conversation.memberOneId;
 
     const conversationKey = `conversation:${data.conversationId}:messages`;
+    const memberOneUpdateKey = `user:${data.conversation.memberOneId}:lastMessageUpdate`;
+    const memberTwoUpdateKey = `user:${data.conversation.memberTwoId}:lastMessageUpdate`;
+
     res?.socket?.server?.io.emit(conversationKey, data);
+    res?.socket?.server?.io.emit(memberOneUpdateKey, { conversationId: data.conversationId, lastMessage: data.content });
+    res?.socket?.server?.io.emit(memberTwoUpdateKey, { conversationId: data.conversationId, lastMessage: data.content });
 
     return res.status(200).json(data);
   } catch (error) {

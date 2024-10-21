@@ -35,12 +35,12 @@ export default async function RootLayout({
             "bg-[#313338] dark"
           )}
         >
-          <SocketProvider id={profile ? profile.id : ""}>
-            <QueryProvider>
+          <QueryProvider>
+            <SocketProvider id={profile ? profile.id : ""}>
               <ModalProvider />
               {children}
-            </QueryProvider>
-          </SocketProvider>
+            </SocketProvider>
+          </QueryProvider>
         </body>
       </html>
     </ClerkProvider>

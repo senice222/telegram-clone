@@ -22,6 +22,7 @@ const NavigationSidebar: FC<SidebarProps> = ({ profile }) => {
     const channels = profile?.channels
     const [isFirstRender, setIsFirstRender] = useState(true);
     const { data: allChats, isLoading } = useAllChats(profile.id);
+    console.log(allChats);
 
     useEffect(() => {
         setIsFirstRender(true);

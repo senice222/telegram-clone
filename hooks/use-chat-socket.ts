@@ -1,4 +1,5 @@
 import { useSocket } from "@/providers/socket-provider";
+import { Group } from "@/types/Group";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 
@@ -6,11 +7,9 @@ type ChatSocketProps = {
     addKey: string;
     updateKey: string;
     queryKey: string;
-    groupKey: string
 }
 
-
-export const useChatSocket = ({ addKey, updateKey, queryKey, groupKey }: ChatSocketProps) => {
+export const useChatSocket = ({ addKey, updateKey, queryKey }: ChatSocketProps) => {
     const { socket } = useSocket()
     const queryClient = useQueryClient()
 
@@ -18,13 +17,29 @@ export const useChatSocket = ({ addKey, updateKey, queryKey, groupKey }: ChatSoc
         if (!socket) {
             return;
         }
-        socket.on(groupKey, (newGroup: any) => {
-            console.log("group created")
-            queryClient.setQueryData(['allChats'], (oldData: any) => [
-                newGroup,
-                ...(oldData || []),
-            ]);
-        });
+        socket.on(updateKey, (message: any) => {
+            queryClient.setQueryData([queryKey], (oldData: any) => {
+                if (!oldData || !oldData.pages || oldData.length === 0) {
+                    return oldData
+                }
+                const newData = oldData.pages.map((page: any) => {
+                    return {
+                        ...page,
+                        items: page.items.map((item: any) => {
+                            if (item.id === message.id) {
+                                return message
+                            }
+                            return item
+                        })
+                    }
+                })
+                return {
+                    ...oldData,
+                    pages: newData
+                }
+            })
+        })
+
         socket.on(addKey, (message: any) => {
             queryClient.setQueryData([queryKey], (oldData: any) => {
                 if (!oldData || !oldData.pages || oldData.length === 0) {
@@ -35,8 +50,36 @@ export const useChatSocket = ({ addKey, updateKey, queryKey, groupKey }: ChatSoc
                     }
                 }
                 const newData = [...oldData.pages]
+                
+                const newCategorizedMessages = newData[0].categorizedMessages
+
+                const urlRegex = /(https?:\/\/[^\s]+)/g;
+                if (message.files) {
+                    let parsedFiles;
+
+                    if (typeof message.files === "string") {
+                        try {
+                            parsedFiles = JSON.parse(message.files); 
+                        } catch (error) {
+                            console.error("Error parsing JSON", error);
+                        }
+                    } else {
+                        parsedFiles = message.files; 
+                    }
+
+                    if (parsedFiles?.type === "imgs") {
+                        newCategorizedMessages.media.push(message);
+                    } else if (parsedFiles?.type === "files") {
+                        newCategorizedMessages.files.push(message);
+                    }
+                }
+
+                if (urlRegex.test(message.content)) {
+                    newCategorizedMessages.links.push(message);
+                }
                 newData[0] = {
                     ...newData[0],
+                    categorizedMessages : newCategorizedMessages,
                     items: [
                         message,
                         ...newData[0].items
@@ -48,20 +91,11 @@ export const useChatSocket = ({ addKey, updateKey, queryKey, groupKey }: ChatSoc
                     pages: newData
                 }
             })
-            queryClient.setQueryData(['allChats'], (chats: any) => {
-                return chats.map((chat: any) => {
-                    if (chat.id === message.conversationId || chat.id === message.channelId || chat.id === message.groupId) {
-                        return { ...chat, lastMessage: message.content };
-                    }
-                    return chat;
-                });
-            });
         })
 
         return () => {
             socket.off(updateKey)
             socket.off(addKey)
-            socket.off(groupKey);
         }
     }, [socket, queryClient, addKey, updateKey, queryKey])
 }

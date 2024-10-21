@@ -24,21 +24,28 @@ const SendMessage: React.FC<{ id: string; apiUrl: string }> = ({ id, apiUrl }) =
 
     const [file, setFile] = useState<File | null>(null);
 
-    const handleFileChange = (event: Event) => {
+    const handleFileChange = (event: Event, type: string) => {
         const target = event.target as HTMLInputElement;
         const selectedFile = target.files?.[0];
         if (selectedFile) {
             setFile(selectedFile);
-            onOpen("sendMessage", { file: selectedFile, id, apiUrl });
+            onOpen("sendMessage", { file: selectedFile, id, apiUrl, defaultType: type });
         }
     };
 
-    const handlePaperclipClick = () => {
+    const handlePaperclipClick = (type: string) => {
         const fileInput = document.createElement("input");
         fileInput.type = "file";
-        fileInput.onchange = handleFileChange;
+      
+        if (type === "imgs") {
+          fileInput.accept = "image/*"; 
+        } else if (type === "files") {
+          fileInput.accept = "";
+        }
+      
+        fileInput.onchange = (e) => handleFileChange(e, type);
         fileInput.click();
-    };
+      };
 
     const handleSubmit = async (values: z.infer<typeof formSchema>) => {
         try {

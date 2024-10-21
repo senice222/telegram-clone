@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { User } from '@/types/User';
 import qs from 'query-string'
 import { axiosInstance } from "@/core/axios";
-import { isChannel, isConversation, isGroup } from '@/lib/utils';
+import { isChannel, isConversation, isGroup, isUser } from '@/lib/utils';
 
 interface ChatItemProps {
     data: ChatData
@@ -46,7 +46,7 @@ const ChatItem: FC<ChatItemProps> = ({ profile, data, setIsSearching }) => {
 
     const handleClick = () => {
         if (data.type === 'user') {
-            router.push(`/profile/${data.id}`); // Redirect to the user's profile
+            router.push(`/profile/${data.id}`); 
         } else {
             router.push(data.id);
         }
@@ -61,7 +61,6 @@ const ChatItem: FC<ChatItemProps> = ({ profile, data, setIsSearching }) => {
             },
         });
     }
-   
     return (
         <motion.div
             onClick={handleClick}
@@ -70,7 +69,7 @@ const ChatItem: FC<ChatItemProps> = ({ profile, data, setIsSearching }) => {
         >
             <div className="w-[100%] flex items-center justify-between">
                 <div className="w-[100%] flex items-center">
-                    <div className='ml-2'>
+                    <div className='ml-2 relative'>
                         <img
                             src={
                                 isChannel(data) || isGroup(data)
@@ -82,6 +81,9 @@ const ChatItem: FC<ChatItemProps> = ({ profile, data, setIsSearching }) => {
                             width={40}
                             className='w-[40px] h-[40px] rounded-full object-cover'
                         />
+                        {otherUser?.online === "online" && (
+                            <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#0ac630] rounded-full border-2 border-[rgb(33,33,33)]"></span>
+                        )}
                     </div>
                     <div className="flex flex-col ml-3">
                         <p className="sender-name font-medium text-[rgb(233,238,244)] mr-1">

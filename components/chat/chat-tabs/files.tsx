@@ -3,7 +3,7 @@ import { mediaFiles, fileList, fileColors, RightPanelProps } from "../data";
 import { Tabs, Tab } from "@nextui-org/tabs";
 import { Card, CardBody } from "@nextui-org/react";
 
-const Files = () => {
+const Files = ({files} : {files: MessageType[]}) => {
   return (
     <div className="grid grid-cols-1 gap-1 mt-2 w-full">
       {fileList.map((file) => {

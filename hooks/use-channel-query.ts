@@ -38,12 +38,21 @@ export const useChatQuery = ({ queryKey, apiUrl, paramKey, paramValue }: ChatQue
             refetchInterval: isConnected ? false : 1000,
             select: (data) => {
                 const allItems = data.pages.flatMap(page => page.items).reverse();
-    
+
+                const allMedia = data.pages.flatMap(page => page.categorizedMessages.media);
+                const allFiles = data.pages.flatMap(page => page.categorizedMessages.files);
+                const allLinks = data.pages.flatMap(page => page.categorizedMessages.links);
+
                 return {
                     ...data,
                     pages: [{
-                        items: allItems
-                    }]
+                        items: allItems,
+                        categorizedMessages: {
+                            media: allMedia,
+                            files: allFiles,
+                            links: allLinks
+                        }
+                    }],
                 };
             }
         });
@@ -55,4 +64,4 @@ export const useChatQuery = ({ queryKey, apiUrl, paramKey, paramValue }: ChatQue
         isFetchingNextPage,
         status
     };
-}
+};

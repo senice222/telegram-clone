@@ -88,7 +88,7 @@ const Header: FC<ChatHeaderProps> = ({ chatType, channelData, profile }) => {
           </h1>
           <p className="text-[#aaaaaa] font-normal text-sm leading-4">
             {isConversation(channelData)
-              ? "last seen 1m ago"
+              ? otherUser?.online
               : isGroup(channelData)
                 ? `${channelData.members.length} members`
                 : `${channelData.members.length} subscribers`}

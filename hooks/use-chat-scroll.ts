@@ -16,10 +16,10 @@ export const useChatScroll = ({
   count,
 }: ChatScrollProps) => {
   const [hasInitialized, setHasInitialized] = useState<boolean>(false);
-
+  
   useEffect(() => {
-    const topDiv = chatRef?.current;
-
+    const topDiv = chatRef.current;
+    
     const handleScroll = () => {
       const scrollTop = topDiv?.scrollTop;
 
@@ -48,7 +48,7 @@ export const useChatScroll = ({
 
       const distanceFromBottom =
         chatContainer.scrollHeight - chatContainer.scrollTop - chatContainer.clientHeight;
-      return distanceFromBottom <= 100;  
+      return distanceFromBottom <= 100;
     };
 
     if (shouldAutoScroll()) {

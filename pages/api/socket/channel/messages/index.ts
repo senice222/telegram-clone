@@ -88,9 +88,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponseServerIo) => {
     });
 
     const channelKey = `channel:${data.channelId}:messages`;
-
+    const lastMessageKey = `user:${currentProfile.id}:lastMessageUpdate`;
     res?.socket?.server?.io.emit(channelKey, data);
-
+    res?.socket?.server?.io.emit(lastMessageKey, {
+      channelId: data.channelId,
+      lastMessage: data.content,
+    });
     return res.status(200).json(data);
   } catch (e) {
     console.error("[MESSAGES POST]", e.message);

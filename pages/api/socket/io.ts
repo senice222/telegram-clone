@@ -24,15 +24,19 @@ export default async function handler(
     io.on("connection", async (socket) => {
       const id = socket.handshake.query.id;
 
-      if (id) {
-        await axiosInstance.post(`/api/user/online/${id}`)
-        console.log(`User ${id} connected`);
+      socket.on('user_online', async (data) => {
+        await axiosInstance.patch(`/api/user/online/${data.id}`, { online: "online" })
+        io.emit('user_status_update', { id: data.id, status: "online" });
+      });
 
-        socket.on("disconnect", async () => {
-          await axiosInstance.post(`/api/user/online/${id}`)
-          console.log(`User ${id} disconnected`);
-        });
-      }
+      socket.on('user_offline', async (data) => {
+        await axiosInstance.patch(`/api/user/online/${data.id}`, { online: "last seen recently" })
+        io.emit('user_status_update', { id: data.id, status: "last seen recenlty" });
+      });
+
+      socket.on('disconnect', async () => {
+        await axiosInstance.patch(`/api/user/online/${id}`, { online: "last seen recently" })
+      });
     });
 
     res.socket.server.io = io;
