@@ -6,6 +6,7 @@ type ChatScrollProps = {
   shouldLoadMore: boolean;
   loadMore: () => void;
   count: number;
+  setIsNearTop: (value: boolean) => void;
 };
 
 export const useChatScroll = ({
@@ -14,6 +15,7 @@ export const useChatScroll = ({
   shouldLoadMore,
   loadMore,
   count,
+  setIsNearTop
 }: ChatScrollProps) => {
   const [hasInitialized, setHasInitialized] = useState<boolean>(false);
   
@@ -21,10 +23,15 @@ export const useChatScroll = ({
     const topDiv = chatRef.current;
     
     const handleScroll = () => {
-      const scrollTop = topDiv?.scrollTop;
-
-      if (scrollTop === 0 && shouldLoadMore) {
-        loadMore();
+      const scrollTop = topDiv?.scrollTop
+  
+      if (scrollTop && scrollTop < 15) {
+        setIsNearTop(true);
+        if (shouldLoadMore) {
+          loadMore();
+        }
+      } else {
+        setIsNearTop(false);
       }
     };
     topDiv?.addEventListener("scroll", handleScroll);
@@ -48,7 +55,7 @@ export const useChatScroll = ({
 
       const distanceFromBottom =
         chatContainer.scrollHeight - chatContainer.scrollTop - chatContainer.clientHeight;
-      return distanceFromBottom <= 100;
+      return distanceFromBottom <= 150;
     };
 
     if (shouldAutoScroll()) {

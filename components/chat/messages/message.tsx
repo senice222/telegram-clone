@@ -15,9 +15,10 @@ interface MessageProps {
   message: MessageType;
   channel: ChatData;
   profile: User;
+  setIsReplying: React.Dispatch<React.SetStateAction<MessageType | null>>
 }
 
-const Message: FC<MessageProps> = ({ message, channel, profile }) => {
+const Message: FC<MessageProps> = ({ message, channel, profile, setIsReplying }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [newMessage, setNewMessage] = useState(message.content);
   const isOwn = message.memberId === profile.id;
@@ -37,17 +38,20 @@ const Message: FC<MessageProps> = ({ message, channel, profile }) => {
 
   const timestamp = format(new Date(message.createdAt), "PPpp");
 
-  const handleReply = () => console.log("Reply action triggered.");
+  const handleReply = () => {
+    setIsReplying(message);
+  };
   const handleCopy = () => navigator.clipboard.writeText(message.content);
   const handleEdit = () => setIsEditing(true);
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`${process.env.NEXT_PUBLIC_SITE_URL}/api/socket/conversation/messages/${message.id}`)
+      await axios.delete(`${process.env.NEXT_PUBLIC_SITE_URL}/api/socket/conversation/messages/${message.id}`);
     } catch (e) {
-      console.log("error editing message", e)
+      console.log("error editing message", e);
     }
   };
+
   const handleCancel = () => {
     setIsEditing(false);
     setNewMessage(message.content);
@@ -61,9 +65,12 @@ const Message: FC<MessageProps> = ({ message, channel, profile }) => {
         owner: message.memberId
       });
     } catch (e) {
-      console.log("error editing message", e)
+      console.log("error editing message", e);
     }
   };
+
+  // Параметр для отображения ответа только для одного сообщения (например, с id = 1)
+  const showReply = message.content === 'testi4';
 
   return (
     <div key={message.id} className={`flex items-center mb-4 ${isOwn ? "justify-end" : "justify-start"}`}>
@@ -77,9 +84,20 @@ const Message: FC<MessageProps> = ({ message, channel, profile }) => {
           <PopoverTrigger>
             <div
               style={isOwn ? { borderRadius: "20px 10px 0px 20px" } : { borderRadius: "10px 20px 20px 0px" }}
-              className={`relative min-h-[32px] flex flex-col justify-center px-2 max-w-xs ${isOwn ? "bg-[#766ac8] text-black" : "bg-[#212121] text-white"
+              className={`relative min-h-[32px] flex flex-col justify-center px-2 max-w-[25rem] ${isOwn ? "bg-[#766ac8] text-black" : "bg-[#212121] text-white"
                 }`}
             >
+              {/* Блок ответа, отображается только для одного сообщения */}
+              {showReply && (
+                <div className={`mt-2 mb-1 min-h-[40px] rounded-[10px] relative flex items-center ${isOwn ? "bg-[#5d4fa7]" : "bg-[#353535]"}`}>
+                  <div style={{ borderRadius: "990px 0 0 990px" }} className="bg-white absolute w-[3px] h-[54px] mr-2"/>
+                  <div className="flex flex-col items-start my-2 ml-2">
+                    <p className="text-sm text-gray-300">Иван:</p>
+                    <p className="text-sm text-white">Артемка жопа в зеленке</p>
+                  </div>
+                </div>
+              )}
+
               {/* File handling or message content */}
               <div
                 className={`overflow-auto ${message.files?.type === "imgs" ? "grid gap-2 h-full grid-cols-2" : "flex flex-col"
@@ -129,7 +147,7 @@ const Message: FC<MessageProps> = ({ message, channel, profile }) => {
               </div>
 
               <div className="flex w-full min-h-[32px] mt-1 items-center justify-end">
-                <p className="text-[16px] text-white text-left">{message.content}</p>
+                <p className="text-[16px] text-white text-left break-all">{message.content}</p>
                 <div className="text-right text-xs mt-3 ml-[6px] mr-1 text-gray-400">{timestamp}</div>
               </div>
               <Appendix

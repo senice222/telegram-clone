@@ -12,6 +12,7 @@ import { isChannel, isConversation, isGroup } from "@/lib/utils";
 import { Member } from "@/types/Group";
 import { ConversationType } from "@/types/Conversation";
 import Pending from "./pending/pending";
+import { MessageType } from "@/types/Message";
 import Error from "./error/error";
 import MessageList from "./messages/message-list";
 
@@ -19,12 +20,14 @@ const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile 
     const queryKey = `${chatType}:${channelData?.id}`
     const addKey = `${chatType}:${channelData?.id}:messages`
     const updateKey = `${chatType}:${channelData?.id}:messages:update`
-   
+
     const bottomRef = useRef<ElementRef<"div">>(null)
     const chatRef = useRef<ElementRef<"div">>(null)
     const headerRef = useRef<HTMLDivElement | null>(null);
-    
+    const [isNearTop, setIsNearTop] = useState(false);
+
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isReplying, setIsReplying] = useState<MessageType | null>(null);
     const menuRef = useRef<HTMLDivElement | null>(null);
     const paramValue = channelData?.id
 
@@ -34,13 +37,15 @@ const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile 
         paramKey,
         paramValue
     })
+
     useChatSocket({ queryKey, addKey, updateKey })
     useChatScroll({
         chatRef,
         bottomRef,
         loadMore: fetchNextPage,
         shouldLoadMore: !isFetchingNextPage && !!hasNextPage,
-        count: data?.pages?.[0].items?.length ?? 0
+        count: data?.pages?.[0].items?.length ?? 0,
+        setIsNearTop
     })
 
     useEffect(() => {
@@ -90,10 +95,9 @@ const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile 
 
                 <div className="flex w-full h-full">
                     <div
-                        className={`transition-all flex flex-col h-full items-center duration-300 ${isMenuOpen ? 'w-[calc(100%-25vw)] max-2xl:w-[100%]' : 'w-[100%]'
-                            }`}
+                        className={`transition-all flex flex-col h-full items-center duration-300 ${isMenuOpen ? 'w-[calc(100%-25vw)] max-2xl:w-[100%]' : 'w-[100%]'}`}
                     >
-                        {hasNextPage && (
+                        {hasNextPage && isNearTop && (
                             <div className="flex justify-center">
                                 {isFetchingNextPage ? (
                                     <Loader2 className="h-7 w-7 text-zinc-500 animate-spin my-4" />
@@ -110,22 +114,30 @@ const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile 
 
                         <div
                             className="w-[728px] max-lg:w-[90%] h-full overflow-auto"
-                            ref={chatRef}
                         >
-                            <MessageList data={data} channelData={channelData} profile={profile} bottomRef={bottomRef} />
+                            <MessageList chatRef={chatRef} setIsReplying={setIsReplying} data={data} channelData={channelData} profile={profile} bottomRef={bottomRef} />
                             {
                                 isChannel(channelData) && profile.id === channelData.ownerId ? (
                                     <SendMessage
+                                        isReplying={isReplying}
+                                        profile={profile}
+                                        setIsReplying={setIsReplying}
                                         id={channelData.id}
                                         apiUrl='channel/messages'
                                     />
                                 ) : isGroup(channelData) && channelData.members.some((item: Member) => item.memberId === profile.id) ? (
                                     <SendMessage
+                                        isReplying={isReplying}
+                                        profile={profile}
+                                        setIsReplying={setIsReplying}
                                         id={channelData.id}
                                         apiUrl='group/messages'
                                     />
                                 ) : isConversation(channelData) && (
                                     <SendMessage
+                                        isReplying={isReplying}
+                                        profile={profile}
+                                        setIsReplying={setIsReplying}
                                         id={(channelData as ConversationType).id}
                                         apiUrl={'conversation/messages'}
                                     />

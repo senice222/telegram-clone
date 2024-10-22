@@ -9,12 +9,15 @@ import { useModal } from "@/hooks/use-modal-hooks";
 import {MessageInput} from "@/components/chat/send-message/message-components/message-input";
 import {SendButton} from "@/components/chat/send-message/message-components/send-button";
 import {Appendix} from "@/components/chat/svgs";
+import { MessageType } from "@/types/Message";
+import { User } from "@/types/User";
+
 
 const formSchema = z.object({
     content: z.string().min(1),
 });
 
-const SendMessage: React.FC<{ id: string; apiUrl: string }> = ({ id, apiUrl }) => {
+const SendMessage: React.FC<{ id: string; apiUrl: string, profile : User, isReplying: MessageType | null, setIsReplying: React.Dispatch<React.SetStateAction<MessageType | null>> }> = ({ id, apiUrl, isReplying, setIsReplying, profile }) => {
     const router = useRouter();
     const { onOpen } = useModal();
     const form = useForm<z.infer<typeof formSchema>>({
@@ -70,6 +73,9 @@ const SendMessage: React.FC<{ id: string; apiUrl: string }> = ({ id, apiUrl }) =
         <div className="h-[56px] w-full mb-[20px]">
             <div className="w-full h-full flex items-end">
                 <MessageInput
+                    profile={profile}
+                    isReplying={isReplying}
+                    setIsReplying={setIsReplying}
                     form={form}
                     handleSubmit={handleSubmit}
                     handlePaperclipClick={handlePaperclipClick}
