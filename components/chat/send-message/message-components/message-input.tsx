@@ -31,12 +31,9 @@ export const MessageInput: React.FC<MessageInputProps> = ({
   isReplying,
   setIsReplying,
 }) => {
+
   return (
-    <Form {...form}>
-      <form
-        className="w-[100%] h-[100%] flex items-center"
-        onSubmit={form.handleSubmit(handleSubmit)}
-      >
+    
         <FormField
           control={form.control}
           name="content"
@@ -66,9 +63,9 @@ export const MessageInput: React.FC<MessageInputProps> = ({
                         className="bg-white absolute w-[3px] h-[calc(100%-10px)] mr-2"
                       />
                       <div className="flex flex-col items-start my-2 ml-2">
-                        <p className="text-sm text-gray-300">Иван:</p>
+                        <p className="text-sm text-gray-300">{isReplying && isReplying.ownerProfile?.name}</p>
                         <p className="text-sm text-white">
-                          Текст текст текст текст
+                          {isReplying && isReplying.content}
                         </p>
                       </div>
                     </div>
@@ -92,7 +89,6 @@ export const MessageInput: React.FC<MessageInputProps> = ({
             </FormItem>
           )}
         />
-      </form>
-    </Form>
+
   );
 };

@@ -5,7 +5,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import multer from "multer";
 import qs from "query-string";
 import { parseBody, runMiddleware, storage } from "@/lib/multer";
-// 
+
 export const config = {
   api: {
     bodyParser: false,
@@ -19,15 +19,15 @@ const handler = async (req, res) => {
   }
 
   try {
-    let content, type, conversationId, files;
+    let content, type, conversationId, files, reply;
 
     if (req.headers["content-type"]?.includes("multipart/form-data")) {
       await runMiddleware(req, res, upload);
-      ({ content, type, conversationId } = req.body);
+      ({ content, type, conversationId, reply } = req.body);
       files = req.files || [];
     } else {
       const body = await parseBody(req);
-      ({ content, type, conversationId, files } = body);
+      ({ content, type, conversationId, files, reply } = body);
       files = files || [];
     }
 
@@ -45,6 +45,8 @@ const handler = async (req, res) => {
     formData.append("content", content);
     formData.append("type", type);
     formData.append("conversationId", conversationId);
+    formData.append("reply", reply);
+
 
     files.forEach((file) => {
       const blob = new Blob([file.buffer], { type: file.mimetype });

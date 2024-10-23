@@ -25,7 +25,7 @@ export const useChatScroll = ({
     const handleScroll = () => {
       const scrollTop = topDiv?.scrollTop
   
-      if (scrollTop && scrollTop < 15) {
+      if (scrollTop && scrollTop < 2) {
         setIsNearTop(true);
         if (shouldLoadMore) {
           loadMore();

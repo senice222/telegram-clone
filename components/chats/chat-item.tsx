@@ -46,7 +46,7 @@ const ChatItem: FC<ChatItemProps> = ({ profile, data, setIsSearching }) => {
 
     const handleClick = () => {
         if (data.type === 'user') {
-            router.push(`/profile/${data.id}`); 
+            router.push(`/profile/${data.id}`);
         } else {
             router.push(data.id);
         }
@@ -61,6 +61,7 @@ const ChatItem: FC<ChatItemProps> = ({ profile, data, setIsSearching }) => {
             },
         });
     }
+
     return (
         <motion.div
             onClick={handleClick}
@@ -89,9 +90,7 @@ const ChatItem: FC<ChatItemProps> = ({ profile, data, setIsSearching }) => {
                         <p className="sender-name font-medium text-[rgb(233,238,244)] mr-1">
                             {isChannel(data) || isGroup(data) ? data?.name : otherUser?.name || ''}
                         </p>
-                        {!isChannel(data) && (
-                            <p className="text-[rgb(160,160,160)] text-sm">{data?.lastMessage ? data?.lastMessage : 'No messages yet'}</p>
-                        )}
+                        <p className="text-[rgb(160,160,160)] text-sm">{data?.lastMessage ? data?.lastMessage : 'No messages yet'}</p>
                     </div>
                 </div>
                 {

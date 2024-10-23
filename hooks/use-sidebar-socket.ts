@@ -26,7 +26,6 @@ export const useSidebarSocket = ({ lastMessageUpdateKey, groupKey }: SidebarSock
         socket.on(lastMessageUpdateKey, (update: any) => {
             queryClient.setQueryData(['allChats'], (chats: any) => {
                 if (!chats) return [];
-        
                 const updatedChat = chats.find((chat: any) =>
                     chat.id === update.conversationId ||
                     chat.id === update.channelId ||

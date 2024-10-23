@@ -19,16 +19,15 @@ const handler = async (req, res) => {
   }
 
   try {
-    let content, type, groupId, files;
+    let content, type, groupId, files, reply;
 
     if (req.headers["content-type"]?.includes("multipart/form-data")) {
       await runMiddleware(req, res, upload);
-      ({ content, type, groupId } = req.body);
+      ({ content, type, groupId, reply } = req.body);
       files = req.files || [];
     } else {
       const body = await parseBody(req);
-      ({ content, type, groupId, files } = body);
-      console.log(body)
+      ({ content, type, groupId, files, reply } = body);
       files = files || [];
     }
 
@@ -41,11 +40,13 @@ const handler = async (req, res) => {
         groupId,
       },
     });
-    
+
     const formData = new FormData();
     formData.append("content", content);
     formData.append("type", type);
     formData.append("groupId", groupId);
+    formData.append("reply", reply);
+
 
     files.forEach((file) => {
       const blob = new Blob([file.buffer], { type: file.mimetype });
@@ -56,14 +57,14 @@ const handler = async (req, res) => {
     });
 
     const groupKey = `group:${data.groupId}:messages`;
-    const lastMessageKey = `user:${currentProfile.id}:lastMessageUpdate`;
-
+    data.group.members.map(item => {
+      res?.socket?.server?.io.emit(`user:${item.memberId}:lastMessageUpdate`, {
+        groupId: data.groupId,
+        lastMessage: data.content,
+      });
+    })
     res?.socket?.server?.io.emit(groupKey, data);
-    res?.socket?.server?.io.emit(lastMessageKey, {
-      groupId: data.groupId,
-      lastMessage: data.content,
-    });
-    
+
     return res.status(200).json(data);
   } catch (error) {
     console.error("Ошибка при отправке сообщения:", error);

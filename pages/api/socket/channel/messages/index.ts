@@ -47,15 +47,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponseServerIo) => {
   }
 
   try {
-    let content, type, channelId, files;
+    let content, type, channelId, files, reply;
 
     if (req.headers["content-type"]?.includes("multipart/form-data")) {
       await runMiddleware(req, res, upload);
-      ({ content, type, channelId } = req.body);
+      ({ content, type, channelId, reply } = req.body);
       files = req.files || [];
     } else {
       const body = await parseBody(req);
-      ({ content, type, channelId, files } = body);
+      ({ content, type, channelId, files, reply } = body);
       files = files || [];
     }
 
@@ -73,6 +73,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponseServerIo) => {
     formData.append("content", content);
     formData.append("type", type);
     formData.append("channelId", channelId);
+    formData.append("reply", reply);
 
     files.forEach((file) => {
       if (file && file.buffer && file.mimetype && file.originalname) { // ??? условие

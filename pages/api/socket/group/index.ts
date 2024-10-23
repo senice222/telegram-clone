@@ -32,6 +32,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponseServerIo) => {
     formData.append('name', name);
     formData.append('ownerId', ownerId);
     formData.append('members', members);
+
     formData.append('image', new Blob([files.buffer], { type: files.mimetype }), files.originalname);
 
     const { data } = await axiosInstance.post('/api/group', formData, {

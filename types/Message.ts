@@ -1,4 +1,5 @@
 import { ChannelType } from "./Channel";
+import { User } from "./User";
 
 export interface MessageI {
     id: number;
@@ -21,6 +22,8 @@ export interface MessageType {
     channel: ChannelType
     createdAt: Date
     updatedAt: Date
-    isOwn: boolean
+    isOwn: boolean,
+    replyToMessage: MessageType | null
     memberId: string
+    ownerProfile: User
 }
