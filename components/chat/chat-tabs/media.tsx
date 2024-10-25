@@ -8,13 +8,13 @@ import { MessageType } from "@/types/Message";
 const Media = ({ media }: { media: MessageType[] }) => {
   if (!media) return null;
 
-  let globalIndex = 0; // Добавляем глобальный счётчик индекса
+  let globalIndex = 0; 
 
   return (
     <div className="grid grid-cols-3 mt-0 w-full">
       {media.map((message, messageIndex) => (
         message.files.fileUrls.map((file: any) => {
-          const currentIndex = globalIndex++; // Увеличиваем глобальный индекс на каждом шаге
+          const currentIndex = globalIndex++; 
 
           return (
             <div
