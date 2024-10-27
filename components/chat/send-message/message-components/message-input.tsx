@@ -17,7 +17,6 @@ interface MessageInputProps {
   form: UseFormReturn<z.infer<typeof formSchema>>;
   handlePaperclipClick: (type: string) => void;
   isSubmitting: boolean;
-  handleSubmit: any;
   profile: User;
   isReplying: MessageType | null;
   setIsReplying: React.Dispatch<React.SetStateAction<MessageType | null>>;
@@ -27,7 +26,6 @@ export const MessageInput: React.FC<MessageInputProps> = ({
   form,
   handlePaperclipClick,
   isSubmitting,
-  handleSubmit,
   isReplying,
   setIsReplying,
 }) => {

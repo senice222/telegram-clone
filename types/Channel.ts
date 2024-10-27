@@ -41,7 +41,7 @@ export interface ChatProps {
     chatType: "channel" | "conversation" | "group",
     apiUrl: string,
     paramKey: "channelId" | "conversationId" | "groupId",
-    channelData: ChannelType
+    channelData: ChatData
     profile: User
 }
 export interface ChatHeaderProps {

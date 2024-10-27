@@ -10,11 +10,12 @@ import { Loader2 } from "lucide-react";
 import { useChatScroll } from "@/hooks/use-chat-scroll";
 import { isChannel, isConversation, isGroup } from "@/lib/utils";
 import { Member } from "@/types/Group";
-import { ConversationType } from "@/types/Conversation";
 import Pending from "./pending/pending";
 import { MessageType } from "@/types/Message";
 import Error from "./error/error";
 import MessageList from "./messages/message-list";
+import useMarkAsReadOnScroll from "@/hooks/use-mark-as-read";
+import { User } from "@/types/User";
 
 const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile }) => {
     const queryKey = `${chatType}:${channelData?.id}`
@@ -31,6 +32,14 @@ const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile 
     const menuRef = useRef<HTMLDivElement | null>(null);
     const paramValue = channelData?.id
 
+    const otherUsers: User[] = isConversation(channelData)
+        ? [profile?.id === channelData?.memberOne?.id ? channelData?.memberTwo : channelData?.memberOne]
+        : isGroup(channelData)
+            ? channelData?.members
+                ?.filter((member: Member) => member?.profile?.id !== profile?.id)
+                ?.map((member: Member) => member.profile)
+            : [];
+
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = useChatQuery({
         queryKey,
         apiUrl,
@@ -38,6 +47,7 @@ const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile 
         paramValue
     })
 
+    useMarkAsReadOnScroll(data, otherUsers, profile, chatRef)
     useChatSocket({ queryKey, addKey, updateKey })
     useChatScroll({
         chatRef,
@@ -97,7 +107,7 @@ const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile 
                     <div
                         className={`transition-all flex flex-col h-full items-center duration-300 ${isMenuOpen ? 'w-[calc(100%-25vw)] max-2xl:w-[100%]' : 'w-[100%]'}`}
                     >
-                        {hasNextPage && isNearTop && (
+                        {hasNextPage && (
                             <div className="flex justify-center">
                                 {isFetchingNextPage ? (
                                     <Loader2 className="h-7 w-7 text-zinc-500 animate-spin my-4" />
@@ -115,10 +125,19 @@ const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile 
                         <div
                             className="w-[728px] max-lg:w-[90%] h-full overflow-auto"
                         >
-                            <MessageList chatRef={chatRef} setIsReplying={setIsReplying} data={data} channelData={channelData} profile={profile} bottomRef={bottomRef} />
+                            <MessageList
+                                chatRef={chatRef}
+                                setIsReplying={setIsReplying}
+                                data={data}
+                                channelData={channelData}
+                                profile={profile}
+                                bottomRef={bottomRef}
+                                queryKey={queryKey}
+                            />
                             {
                                 isChannel(channelData) && profile.id === channelData.ownerId ? (
                                     <SendMessage
+                                        currentProfile={profile}
                                         isReplying={isReplying}
                                         profile={profile}
                                         setIsReplying={setIsReplying}
@@ -127,6 +146,7 @@ const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile 
                                     />
                                 ) : isGroup(channelData) && channelData.members.some((item: Member) => item.memberId === profile.id) ? (
                                     <SendMessage
+                                        currentProfile={profile}
                                         isReplying={isReplying}
                                         profile={profile}
                                         setIsReplying={setIsReplying}
@@ -135,11 +155,12 @@ const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile 
                                     />
                                 ) : isConversation(channelData) && (
                                     <SendMessage
+                                        currentProfile={profile}
                                         isReplying={isReplying}
                                         profile={profile}
                                         setIsReplying={setIsReplying}
-                                        id={(channelData as ConversationType).id}
-                                        apiUrl={'conversation/messages'}
+                                        id={channelData.id}
+                                        apiUrl={'conversation/message'}
                                     />
                                 )
                             }

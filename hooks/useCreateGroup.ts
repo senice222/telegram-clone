@@ -14,7 +14,7 @@ export const useCreateGroup = (onSuccess?: () => void) => {
 
   return useMutation({
     mutationFn: async (formData: FormData) => {
-      const { data } = await axiosInstance.post(`${process.env.NEXT_PUBLIC_SITE_URL}/api/socket/group`, formData, {
+      const { data } = await axiosInstance.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/group`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       }); 
       return data;

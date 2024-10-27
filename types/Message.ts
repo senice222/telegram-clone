@@ -18,12 +18,15 @@ export interface MessageType {
         fileUrls: String[]
     },
     channelId: string
+    conversationId: string
     deleted: boolean
     channel: ChannelType
     createdAt: Date
     updatedAt: Date
     isOwn: boolean,
+    isRead: boolean,
     replyToMessage: MessageType | null
     memberId: string
     ownerProfile: User
+    readBy: User[]
 }

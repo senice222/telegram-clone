@@ -1,8 +1,6 @@
 'use client';
 import React from "react";
-import { mediaFiles, fileList, fileColors } from "../data";
-import { Tabs, Tab } from "@nextui-org/tabs";
-import { Card, CardBody } from "@nextui-org/react";
+import { mediaFiles } from "../data";
 import { MessageType } from "@/types/Message";
 
 const Media = ({ media }: { media: MessageType[] }) => {

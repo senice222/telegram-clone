@@ -5,6 +5,8 @@ import axios from "axios";
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 import { EllipsisVertical } from "lucide-react";
 import { PhotoItem } from "@/components/modals/send-image-modal/photo-item";
+import { axiosInstance } from "@/core/axios";
+import qs from "query-string";
 
 interface Photo {
   file: File;
@@ -20,6 +22,7 @@ const SendImageModal = () => {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [typeMsg, setTypeMsg] = useState<string>(data.defaultType ? data.defaultType : "imgs");
   const [text, setText] = useState<string>("");
+  const {id, apiUrl, profile} = data
 
   useEffect(() => {
     if (data?.file && data.file instanceof File) {
@@ -51,7 +54,7 @@ const SendImageModal = () => {
     fileInput.type = "file";
 
     if (typeMsg === "imgs") {
-      fileInput.accept = "image/*";
+      fileInput.accept = "image/*, videos/*";
     } else {
       fileInput.accept = "";
     }
@@ -78,21 +81,37 @@ const SendImageModal = () => {
 
   const onSubmit = async () => {
     try {
-      const url = `/api/socket/${data.apiUrl}`;
-      const formData = new FormData();
-      formData.append("content", text);
-      formData.append("type", typeMsg);
-      formData.append("conversationId", data?.id);
-      formData.append("channelId", data?.id);
-
-      photos.forEach((photo) => {
-        formData.append("fileUrls", photo.file);
-      });
-
-      await axios.post(url, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      handleClose();
+      if (id && profile) {
+        const query: any = {
+          profileId: profile.id,
+        };
+  
+        if (id.startsWith("-1")) {
+          query.groupId = id;
+        } else if (id.startsWith("-")) {
+          query.conversationId = id;
+        } else {
+          query.channelId = id;
+        }
+        const url = qs.stringifyUrl({
+          url: `/api/${apiUrl}`,
+          query
+        });
+        const formData = new FormData();
+        formData.append("content", text);
+        formData.append("type", typeMsg);
+        formData.append("conversationId", id);
+        formData.append("channelId", id);
+  
+        photos.forEach((photo) => {
+          formData.append("fileUrls", photo.file);
+        });
+  
+        await axiosInstance.post(url, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        handleClose();
+      }
     } catch (error) {
       console.error("Ошибка при отправке сообщения:", error);
     }

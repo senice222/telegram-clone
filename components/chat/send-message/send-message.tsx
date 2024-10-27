@@ -1,24 +1,24 @@
 import React, { useState } from "react";
-import { File } from "lucide-react";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
-import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
-
+import { Form } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import { useModal } from "@/hooks/use-modal-hooks";
 import { MessageInput } from "@/components/chat/send-message/message-components/message-input";
 import { SendButton } from "@/components/chat/send-message/message-components/send-button";
 import { Appendix } from "@/components/chat/svgs";
 import { MessageType } from "@/types/Message";
 import { User } from "@/types/User";
+import { axiosInstance } from "@/core/axios";
+import qs from "query-string";
 
 const formSchema = z.object({
   content: z.string().min(1),
 });
 
 interface SendMessageProps {
+  currentProfile: User
   id: string;
   apiUrl: string;
   profile: User;
@@ -27,6 +27,7 @@ interface SendMessageProps {
 }
 
 const SendMessage: React.FC<SendMessageProps> = ({
+  currentProfile,
   id,
   apiUrl,
   isReplying,
@@ -47,6 +48,7 @@ const SendMessage: React.FC<SendMessageProps> = ({
     if (selectedFile) {
       setFile(selectedFile);
       onOpen("sendMessage", {
+        profile,
         file: selectedFile,
         id,
         apiUrl,
@@ -60,7 +62,7 @@ const SendMessage: React.FC<SendMessageProps> = ({
     fileInput.type = "file";
 
     if (type === "imgs") {
-      fileInput.accept = "image/*";
+      fileInput.accept = "image/*, video/*";
     } else if (type === "files") {
       fileInput.accept = "";
     }
@@ -68,28 +70,47 @@ const SendMessage: React.FC<SendMessageProps> = ({
     fileInput.onchange = (e) => handleFileChange(e, type);
     fileInput.click();
   };
-
+  
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const url = `${process.env.NEXT_PUBLIC_SITE_URL}/api/socket/${apiUrl}`;
-      const type = "text";
-      // console.log(isReplying?.id)
-      let body = {
-        ...values,
-        ...(id.startsWith("-1")
-          ? { groupId: id }
-          : id.startsWith("-")
-          ? { conversationId: id }
-          : { channelId: id, type }),
-        reply: isReplying?.id,
+      const formData = new FormData();
+      const query: any = {
+        profileId: currentProfile.id,
       };
 
-      await axios.post(url, body);
+      if (id.startsWith("-1")) {
+        query.groupId = id;
+      } else if (id.startsWith("-")) {
+        query.conversationId = id;
+      } else {
+        query.channelId = id;
+      }
+      const url = qs.stringifyUrl({
+        url: `/api/${apiUrl}`,
+        query
+      });
+      formData.append("content", values.content);
+      formData.append("type", "text");
+      formData.append("reply", isReplying?.id || "");
+
+      if (id.startsWith("-1")) {
+        formData.append("groupId", id);
+      } else if (id.startsWith("-")) {
+        formData.append("conversationId", id);
+      } else {
+        formData.append("channelId", id);
+        formData.append("type", "text");
+      }
+
+      await axiosInstance.post(url, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
       setIsReplying(null);
       form.reset();
       router.refresh();
     } catch (e) {
-      console.error(e);
+      console.error("Ошибка при отправке формы:", e);
     }
   };
 
@@ -106,7 +127,6 @@ const SendMessage: React.FC<SendMessageProps> = ({
               isReplying={isReplying}
               setIsReplying={setIsReplying}
               form={form}
-              handleSubmit={handleSubmit}
               handlePaperclipClick={handlePaperclipClick}
               isSubmitting={form.formState.isSubmitting}
             />

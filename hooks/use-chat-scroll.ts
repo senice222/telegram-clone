@@ -23,15 +23,10 @@ export const useChatScroll = ({
     const topDiv = chatRef.current;
     
     const handleScroll = () => {
-      const scrollTop = topDiv?.scrollTop
-  
-      if (scrollTop && scrollTop < 2) {
-        setIsNearTop(true);
-        if (shouldLoadMore) {
-          loadMore();
-        }
-      } else {
-        setIsNearTop(false);
+      const scrollTop = topDiv?.scrollTop;
+
+      if (scrollTop === 0 && shouldLoadMore) {
+        loadMore();
       }
     };
     topDiv?.addEventListener("scroll", handleScroll);

@@ -2,11 +2,10 @@
 import { axiosInstance } from "@/core/axios";
 import { useQueryClient } from "@tanstack/react-query";
 import { createContext, useContext, useEffect, useState } from "react";
-import { io as ClientIO } from "socket.io-client";
 
 type SocketContextType = {
-    socket: any | null;
-    isConnected: boolean
+    socket: WebSocket | null;
+    isConnected: boolean;
 }
 
 const SocketContext = createContext<SocketContextType>({
@@ -15,63 +14,66 @@ const SocketContext = createContext<SocketContextType>({
 });
 
 export const useSocket = () => {
-    return useContext(SocketContext)
+    return useContext(SocketContext);
 }
 
 export const SocketProvider = ({ children, id }: { children: React.ReactNode, id: string }) => {
-    const [socket, setSocket] = useState<any | null>(null)
-    const [isConnected, setIsConnected] = useState(false)
-    const queryClient = useQueryClient()
+    const [socket, setSocket] = useState<WebSocket | null>(null);
+    const [isConnected, setIsConnected] = useState(false);
+    const queryClient = useQueryClient();
 
     useEffect(() => {
-        const socketInstance = new (ClientIO as any)(process.env.NEXT_PUBLIC_SITE_URL!, {
-            path: "/api/socket/io",
-            query: {
-                id
-            },
-            addTrailingSlash: false
-        });
-        socketInstance.on("connect", async () => {
-            socketInstance.emit('user_online', { id });
+        const socketInstance = new WebSocket('ws://localhost:5000/api/socket/io');
+
+        socketInstance.onopen = () => {
+            socketInstance.send(JSON.stringify({ method: 'register', data: { id } }));
             setIsConnected(true);
-        });
+        };
 
-        socketInstance.on("disconnect", async () => {
-            socketInstance.emit('user_offline', { id });
+        socketInstance.onclose = () => {
+            socketInstance.send(JSON.stringify({ method: 'user_offline', data: { id } }));
             setIsConnected(false);
-        });
-        socketInstance.on('user_status_update', (data: { id: string, status: string }) => {
-            console.log(`User ${data.id} status updated to ${data.status}`);
-            queryClient.setQueryData(['allChats'], (oldChats: any) => {
-                if (!oldChats) return [];
+        };
 
-                return oldChats.map((chat: any) => {
-                    const otherUser = chat.type === "conversation"
-                        ? chat.memberOne.id === data.id ? chat.memberOne : chat.memberTwo
-                        : null;
+        socketInstance.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            if (message.method === 'user_status_update') {
+                const { id, status } = message.data;    
+                console.log(`User ${id} status updated to ${status}`);
 
-                    if (!otherUser || otherUser.id !== data.id) return chat;
+                queryClient.setQueryData(['allChats'], (oldChats: any) => {
+                    if (!oldChats) return [];
 
-                    return {
-                        ...chat,
-                        memberOne: chat.memberOne.id === otherUser.id
-                            ? { ...chat.memberOne, online: data.status }
-                            : chat.memberOne,
-                        memberTwo: chat.memberTwo.id === otherUser.id
-                            ? { ...chat.memberTwo, online: data.status }
-                            : chat.memberTwo,
-                    };
+                    return oldChats.map((chat: any) => {
+                        const otherUser = chat.type === "conversation"
+                            ? chat.memberOne.id === id ? chat.memberOne : chat.memberTwo
+                            : null;
+
+                        if (!otherUser || otherUser.id !== id) return chat;
+
+                        return {
+                            ...chat,
+                            memberOne: chat.memberOne.id === otherUser.id
+                                ? { ...chat.memberOne, online: status }
+                                : chat.memberOne,
+                            memberTwo: chat.memberTwo.id === otherUser.id
+                                ? { ...chat.memberTwo, online: status }
+                                : chat.memberTwo,
+                        };
+                    });
                 });
-            });
-        });
-        socketInstance.on("connect_error", (error: any) => {
-            console.log("Error during connection:", error);
-        });
+            }
+        };
+
+        // Обработка ошибок соединения
+        socketInstance.onerror = (error) => {
+            console.log("WebSocket error:", error);
+        };
 
         setSocket(socketInstance);
 
         return () => {
-            socketInstance.disconnect();
+            socketInstance.close();
         };
     }, []);
 
@@ -79,5 +81,5 @@ export const SocketProvider = ({ children, id }: { children: React.ReactNode, id
         <SocketContext.Provider value={{ socket, isConnected }}>
             {children}
         </SocketContext.Provider>
-    )
+    );
 }
