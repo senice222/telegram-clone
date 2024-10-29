@@ -1,12 +1,12 @@
 import { User } from '@/types/User';
 import { Dispatch, SetStateAction } from 'react';
 import { create } from 'zustand'
-import { attachedFile } from '@/components/chat/send-message/send-message';
 
 export type ModalType =
     | "createChannel"
     | "sendMessage"
     | "createGroup"
+    | "openImage"
 
 interface ModalData {
     // server?: Server;
@@ -18,10 +18,11 @@ interface ModalData {
     file?: File,
     id?: string,
     defaultType?: string;
-    
+    src? : any,
+    srcType?: string
+        
     // query?: Record<string, any>
 }
-
 interface ModalStore {
     type: ModalType | null;
     data: ModalData;

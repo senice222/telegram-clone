@@ -22,7 +22,6 @@ export const useMessageReadSocket = ({ queryKey, readKey }: ChatSocketProps) => 
 
         if (messageData.key === readKey) {
           const { messageId, readByUserId } = messageData.data;
-          console.log(messageData);
           
           queryClient.setQueryData([queryKey], (oldData: any) => {
               if (!oldData || !oldData.pages) return oldData;

@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/popover";
 import axios from "axios";
 import { useMessageReadSocket } from "@/hooks/use-message-read-socket";
+import { useModal } from "@/hooks/use-modal-hooks";
 
 interface MessageProps {
   message: MessageType;
@@ -35,6 +36,7 @@ const Message: FC<MessageProps> = ({
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [newMessage, setNewMessage] = useState<string>(message.content);
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
+  const {onOpen} = useModal()
   const isOwn = message.memberId === profile.id;
   const readKey = `message:${message.id}:read`
   useMessageReadSocket({ queryKey, readKey })
@@ -114,6 +116,7 @@ const Message: FC<MessageProps> = ({
         return (
           <div
             key={index}
+            onClick={() => onOpen("openImage", {src: photo, srcType: "video"})}
             className={`relative mt-2 ${message.files.fileUrls.length % 2 !== 0 &&
               index === message.files.fileUrls.length - 1
               ? "col-span-2"
@@ -142,6 +145,7 @@ const Message: FC<MessageProps> = ({
       }
       return (
         <div
+          onClick={() => onOpen("openImage", {src: photo, srcType: "img"})}
           key={index}
           className={`relative mt-2 ${message.files.fileUrls.length % 2 !== 0 &&
             index === message.files.fileUrls.length - 1
@@ -206,7 +210,7 @@ const Message: FC<MessageProps> = ({
       console.log("error editing message", e);
     }
   };
-  console.log(message.readBy);
+  // console.log(message.readBy);
   
   return (
     <div

@@ -49,22 +49,22 @@ const useMarkAsReadOnScroll = (
         [data, otherUsers, profile.id]
     );
 
-    useEffect(() => {
-        if (data && data.pages) {
-            const firstUnreadMessage = data.pages
-                .flatMap((page: any) => page.items)
-                .find((msg: MessageType) =>
-                    !msg.isRead
-                        ? true
-                        : !msg.readBy?.some((user: User) => user.id === profile.id)
-                );
+    // useEffect(() => {
+    //     if (data && data.pages) {
+    //         const firstUnreadMessage = data.pages
+    //             .flatMap((page: any) => page.items)
+    //             .find((msg: MessageType) =>
+    //                 !msg.isRead
+    //                     ? true
+    //                     : !msg.readBy?.some((user: User) => user.id === profile.id)
+    //             );
             
-            if (firstUnreadMessage && chatRef.current) {
-                const messageElement = document.getElementById(firstUnreadMessage.id);
-                messageElement?.scrollIntoView({ behavior: "smooth", block: "center" });
-            }
-        }
-    }, [data, profile.id]);
+    //         if (firstUnreadMessage && chatRef.current) {
+    //             const messageElement = document.getElementById(firstUnreadMessage.id);
+    //             messageElement?.scrollIntoView({ behavior: "smooth", block: "center" });
+    //         }
+    //     }
+    // }, [data, profile.id]);
 
     useEffect(() => {
         if (observer.current) observer.current.disconnect();

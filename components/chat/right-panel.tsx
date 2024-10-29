@@ -4,7 +4,7 @@ import Media from "./chat-tabs/media";
 import Files from "./chat-tabs/files";
 import Links from "./chat-tabs/links";
 import { Tabs, Tab } from "@nextui-org/tabs";
-import {MessageType} from "@/types/Message";
+import { MessageType } from "@/types/Message";
 import { isChannel, isConversation, isGroup } from "@/lib/utils";
 import { User } from "@/types/User";
 import { ChatData } from "@/types/Channel";
@@ -52,7 +52,13 @@ const RightPanel = ({
           >
             <X color="rgb(170, 170, 170)" />
           </div>
-          <h2 className="ml-[25px] text-white text-xl font-medium">User Info</h2>
+          <h2 className="ml-[25px] text-white text-xl font-medium">
+            {isConversation(channelData)
+              ? "User Info"
+              : isGroup(channelData)
+                ? `Group Info`
+                : `Channel Info`}
+          </h2>
         </div>
         <div
           className="w-[25vw] h-[25vw] flex flex-col justify-end bg-cover object-cover"
@@ -77,13 +83,13 @@ const RightPanel = ({
         <div className="flex w-full flex-col">
           <Tabs className="mt-2" variant="underlined" color="success" aria-label="Options" fullWidth>
             <Tab key="media" title="Media">
-              <Media media={categorizedMessages?.media}/>
+              <Media media={categorizedMessages?.media} />
             </Tab>
             <Tab key="files" title="Files">
-              <Files files={categorizedMessages?.files}/>
+              <Files files={categorizedMessages?.files} />
             </Tab>
             <Tab key="links" title="Links">
-              <Links links={categorizedMessages?.links}/>
+              <Links links={categorizedMessages?.links} />
             </Tab>
           </Tabs>
         </div>
