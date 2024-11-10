@@ -8,18 +8,24 @@ export type ModalType =
     | "createGroup"
     | "openImage"
 
-interface ModalData {
+export interface ModalData {
     // server?: Server;
     // channel?: Channel;
     profile?: User
     apiUrl?: string;
     groupMembers?: User[];
     setIsCreatingGroup?: Dispatch<SetStateAction<boolean>>,
+    setIsAddingToGroup?: Dispatch<SetStateAction<boolean>>,
     file?: File,
     id?: string,
     defaultType?: string;
     src? : any,
-    srcType?: string
+    srcType?: string,
+    categorizedMessages?: {
+        media: MessageType[];
+        files: MessageType[];
+        links: MessageType[];
+      }
         
     // query?: Record<string, any>
 }

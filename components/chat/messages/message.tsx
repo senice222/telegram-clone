@@ -17,10 +17,16 @@ import {
 import axios from "axios";
 import { useMessageReadSocket } from "@/hooks/use-message-read-socket";
 import { useModal } from "@/hooks/use-modal-hooks";
+import { axiosInstance } from "@/core/axios";
 
 interface MessageProps {
   message: MessageType;
   channel: ChatData;
+  categorizedMessages: {
+    media: MessageType[];
+    files: MessageType[];
+    links: MessageType[];
+  };
   profile: User;
   setIsReplying: React.Dispatch<React.SetStateAction<MessageType | null>>;
   queryKey: string
@@ -31,7 +37,8 @@ const Message: FC<MessageProps> = ({
   channel,
   profile,
   setIsReplying,
-  queryKey
+  queryKey,
+  categorizedMessages
 }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [newMessage, setNewMessage] = useState<string>(message.content);
@@ -116,7 +123,7 @@ const Message: FC<MessageProps> = ({
         return (
           <div
             key={index}
-            onClick={() => onOpen("openImage", {src: photo, srcType: "video"})}
+            onClick={() => onOpen("openImage", {src: photo, srcType: "video", categorizedMessages,})}
             className={`relative mt-2 ${message.files.fileUrls.length % 2 !== 0 &&
               index === message.files.fileUrls.length - 1
               ? "col-span-2"
@@ -145,7 +152,7 @@ const Message: FC<MessageProps> = ({
       }
       return (
         <div
-          onClick={() => onOpen("openImage", {src: photo, srcType: "img"})}
+          onClick={() => onOpen("openImage", {src: photo, srcType: "img", categorizedMessages})}
           key={index}
           className={`relative mt-2 ${message.files.fileUrls.length % 2 !== 0 &&
             index === message.files.fileUrls.length - 1
@@ -182,9 +189,7 @@ const Message: FC<MessageProps> = ({
 
   const handleDelete = async () => {
     try {
-      await axios.delete(
-        `${process.env.NEXT_PUBLIC_SITE_URL}/api/socket/conversation/messages/${message.id}`
-      );
+      await axiosInstance.delete(`/api/conversation/message/delete/${message.id}/${profile.id}`);
       setPopoverOpen(false);
     } catch (e) {
       console.log("error editing message", e);
@@ -199,10 +204,11 @@ const Message: FC<MessageProps> = ({
   const handleSave = async () => {
     setIsEditing(false);
     try {
-      await axios.patch(
-        `${process.env.NEXT_PUBLIC_SITE_URL}/api/socket/conversation/messages/${message.id}`,
+      await axiosInstance.patch(
+        `/api/conversation/message/edit/${message.id}`,
         {
           content: newMessage,
+          profile,
           owner: message.memberId,
         }
       );
@@ -210,7 +216,6 @@ const Message: FC<MessageProps> = ({
       console.log("error editing message", e);
     }
   };
-  // console.log(message.readBy);
   
   return (
     <div
@@ -274,10 +279,10 @@ const Message: FC<MessageProps> = ({
                             <span className="text-white">
                               {file.mimetype?.split("/")[1]}
                             </span>
-                            <div className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <div onClick={(e) => e.stopPropagation()} className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                               <a
-                                href={file.url}
-                                download={file.originalname}
+                                href={`${process.env.NEXT_PUBLIC_SERVER_URL}/api/uploads/${file.filename}`}
+                                download={`${process.env.NEXT_PUBLIC_SERVER_URL}/api/uploads/${file.filename}`}
                                 className="text-white"
                               >
                                 <Download />

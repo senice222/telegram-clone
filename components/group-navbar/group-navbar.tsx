@@ -3,34 +3,74 @@ import React, { Dispatch, FC, SetStateAction, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { User } from '@/types/User'
+import { Member } from "@/types/Group";
+
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import { useModal } from '@/hooks/use-modal-hooks'
+import { useAddMemberGroup } from "@/hooks/useCreateGroup";
+
 import { ConversationType } from '@/types/Channel'
 
 interface GroupNavbarProps {
-    setIsCreatingGroup: Dispatch<SetStateAction<boolean>>
-    profile: User
+    title: string;
+    profile: User;
+    selectedMembers: User[];
+    setSelectedMembers: Dispatch<SetStateAction<User[]>>;
+    onBack: () => void;
+    searchPlaceholder?: string;
+    groupMembers: Member[] | null;
+    actionIcon?: React.ReactNode;
+    onAction?: (selectedMembers: User[]) => void;
+    groupId: string | null;
 }
 
-const GroupNavbar: FC<GroupNavbarProps> = ({ profile, setIsCreatingGroup }) => {
-    const [selectedMembers, setSelectedMembers] = useState<User[]>([])
+const GroupNavbar: FC<GroupNavbarProps> = ({
+    title,
+    profile,
+    selectedMembers,
+    setSelectedMembers,
+    groupId,
+    groupMembers,
+    onBack,
+    searchPlaceholder = 'Who would you like to add?',
+    actionIcon = <ArrowRight stroke="white" />,
+    onAction
+}) => {
     const [searchValue, setSearchValue] = useState<string>('')
-    const { onOpen } = useModal()
+    
     const conversations = [
         ...(profile?.conversationsReceived || []).map((conversation: ConversationType) => ({ ...conversation, type: 'conversation' })),
         ...(profile?.conversationsInitiated || []).map((conversation: ConversationType) => ({ ...conversation, type: 'conversation' })),
     ]
-    
     const usersToInvite = conversations
         .filter((conv) => conv.memberOneId === profile.id || conv.memberTwoId === profile.id)
-        .map((conv) => (conv.memberOneId === profile.id ? conv.memberTwo : conv.memberOne));
-    const isDisabled = selectedMembers.length === 0;
+        .map((conv) => (conv.memberOneId === profile.id ? conv.memberTwo : conv.memberOne))
+        .filter((user) => !groupMembers?.some((member) => member.profile.id === user.id));
 
+    const { mutate: addMemberGroup } = useAddMemberGroup(() => {
+        onBack()
+    });
+
+    const onSubmit = async () => {
+        try {
+            if (profile) {
+                const formData = new FormData();
+                formData.append('members', JSON.stringify(selectedMembers));
+                if (groupId) {
+                    formData.append('groupId', groupId);
+                }
+                addMemberGroup(formData);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    };
+
+    const isDisabled = selectedMembers.length === 0;
     const filteredUsers = usersToInvite.filter((user) =>
         user.name.toLowerCase().includes(searchValue.toLowerCase())
     )
-    
+
     const toggleMember = (user: User) => {
         setSelectedMembers((prev: User[]) => {
             const isSelected = prev.some(member => member.id === user.id)
@@ -39,6 +79,7 @@ const GroupNavbar: FC<GroupNavbarProps> = ({ profile, setIsCreatingGroup }) => {
                 : [...prev, user]
         })
     }
+
     return (
         <motion.div
             className="flex flex-col h-full w-full bg-[rgb(33,33,33)] border-r-[#303030] text-primary relative"
@@ -49,10 +90,10 @@ const GroupNavbar: FC<GroupNavbarProps> = ({ profile, setIsCreatingGroup }) => {
         >
             {/* header */}
             <div className="flex items-center pt-1.5 pb-2 px-[0.8125rem] select-none">
-                <div onClick={() => setIsCreatingGroup(false)} className='w-10 h-10 rounded-[50%] hover:bg-[#2B2B2B] cursor-pointer flex items-center justify-center transition'>
+                <div onClick={onBack} className='w-10 h-10 rounded-[50%] hover:bg-[#2B2B2B] cursor-pointer flex items-center justify-center transition'>
                     <ArrowLeft stroke={"grey"} />
                 </div>
-                <h1 className="ml-5 text-lg font-medium text-white">Add Members</h1>
+                <h1 className="ml-5 text-lg font-medium text-white">{title}</h1>
             </div>
 
             {/* selected member section */}
@@ -76,7 +117,7 @@ const GroupNavbar: FC<GroupNavbarProps> = ({ profile, setIsCreatingGroup }) => {
                         onChange={(e) => setSearchValue(e.target.value)}
                         className='w-full h-[32px] bg-transparent outline-none border-none caret-[rgb(135,116,225)] text-white'
                         type='text'
-                        placeholder='Who would you like to add?'
+                        placeholder={searchPlaceholder}
                     />
                 </div>
             </div>
@@ -124,19 +165,23 @@ const GroupNavbar: FC<GroupNavbarProps> = ({ profile, setIsCreatingGroup }) => {
             <div className='absolute bottom-4 right-3'>
                 <div
                     onClick={() => {
-                        if (!isDisabled) {
-                            onOpen("createGroup", { groupMembers: selectedMembers, profile, setIsCreatingGroup });
+                        if (!isDisabled && onAction) {
+                            if (groupId) {
+                                onSubmit()
+                            } else {
+                                onAction(selectedMembers);
+                            }
                         }
                     }}
                     className={`flex items-center justify-center w-[56px] h-[56px] rounded-full 
                 ${isDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-[rgb(135,116,225)] hover:bg-[rgb(123,113,198)] cursor-pointer'} 
                 transition shadow-lg`}
                 >
-                    <ArrowRight stroke="white" />
+                    {actionIcon}
                 </div>
             </div>
         </motion.div>
     )
 }
 
-export default GroupNavbar
+export default GroupNavbar;

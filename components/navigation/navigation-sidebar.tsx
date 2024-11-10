@@ -9,6 +9,7 @@ import GroupNavbar from "../group-navbar/group-navbar";
 import DefaultSidebar from "./default-sidebar";
 import { useAllChats } from "@/hooks/use-all-chats";
 import Pending from "../chat/pending/pending";
+import { useModal } from "@/hooks/use-modal-hooks";
 
 interface SidebarProps {
     profile: User
@@ -19,6 +20,8 @@ const NavigationSidebar: FC<SidebarProps> = ({ profile }) => {
     const [isSearching, setIsSearching] = useState<boolean>(false)
     const [searchValue, setSearchValue] = useState<string>('')
     const [isCreatingGroup, setIsCreatingGroup] = useState<boolean>(false)
+    const [selectedMembers, setSelectedMembers] = useState<User[]>([])
+    const { onOpen } = useModal()
     const channels = profile?.channels
     const [isFirstRender, setIsFirstRender] = useState(true);
     const { data: allChats, isLoading } = useAllChats(profile.id);
@@ -26,7 +29,7 @@ const NavigationSidebar: FC<SidebarProps> = ({ profile }) => {
     useEffect(() => {
         setIsFirstRender(true);
     }, []);
-    
+
     if (isLoading || !channels || !allChats) return <Pending />
 
     const navbarComponents = {
@@ -42,7 +45,16 @@ const NavigationSidebar: FC<SidebarProps> = ({ profile }) => {
                 <SearchNavbar profile={profile} setIsSearching={setIsSearching} searchValue={searchValue} />
             </>
         ),
-        createGroup: <GroupNavbar profile={profile} setIsCreatingGroup={setIsCreatingGroup} />,
+        createGroup: <GroupNavbar
+            title="Add Members"
+            profile={profile}
+            selectedMembers={selectedMembers}
+            setSelectedMembers={setSelectedMembers}
+            onBack={() => setIsCreatingGroup(false)}
+            onAction={(selectedMembers) => {
+                onOpen("createGroup", { groupMembers: selectedMembers, profile, setIsCreatingGroup });
+            }}
+        />,
         default: <DefaultSidebar
             isFirstRender={isFirstRender}
             searchValue={searchValue}

@@ -16,21 +16,27 @@ import Error from "./error/error";
 import MessageList from "./messages/message-list";
 import useMarkAsReadOnScroll from "@/hooks/use-mark-as-read";
 import { User } from "@/types/User";
+import { useModal } from "@/hooks/use-modal-hooks";
+import { useGroupMemberSocket } from "@/hooks/use-group-member-socket";
 
 const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile }) => {
     const queryKey = `${chatType}:${channelData?.id}`
     const addKey = `${chatType}:${channelData?.id}:messages`
     const updateKey = `${chatType}:${channelData?.id}:messages:update`
+    const groupMemberKey = `${chatType}:${profile?.id}:added`
 
     const bottomRef = useRef<ElementRef<"div">>(null)
     const chatRef = useRef<ElementRef<"div">>(null)
     const headerRef = useRef<HTMLDivElement | null>(null);
-    const [isNearTop, setIsNearTop] = useState(false);
-
+    const [isNearTop, setIsNearTop] = useState<boolean>(false);
+    const [isAddingToGroup, setIsAddingToGroup] = useState<boolean>(false);
+    const { onOpen } = useModal()
+    const [search, setSearch] = useState("");
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isReplying, setIsReplying] = useState<MessageType | null>(null);
     const menuRef = useRef<HTMLDivElement | null>(null);
     const paramValue = channelData?.id
+
 
     const otherUsers: User[] = isConversation(channelData)
         ? [profile?.id === channelData?.memberOne?.id ? channelData?.memberTwo : channelData?.memberOne]
@@ -46,7 +52,7 @@ const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile 
         paramKey,
         paramValue
     })
-
+    useGroupMemberSocket({queryKey, groupMemberKey})
     useMarkAsReadOnScroll(data, otherUsers, profile, chatRef)
     useChatSocket({ queryKey, addKey, updateKey })
     useChatScroll({
@@ -107,7 +113,7 @@ const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile 
                     <div
                         className={`transition-all flex flex-col h-full items-center duration-300 ${isMenuOpen ? 'w-[calc(100%-25vw)] max-2xl:w-[100%]' : 'w-[100%]'}`}
                     >
-                        {hasNextPage && (
+                        {(hasNextPage && isNearTop) && (
                             <div className="flex justify-center">
                                 {isFetchingNextPage ? (
                                     <Loader2 className="h-7 w-7 text-zinc-500 animate-spin my-4" />
@@ -127,6 +133,7 @@ const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile 
                         >
                             <MessageList
                                 chatRef={chatRef}
+                                categorizedMessages={data?.pages?.[0].categorizedMessages}
                                 setIsReplying={setIsReplying}
                                 data={data}
                                 channelData={channelData}
@@ -168,14 +175,17 @@ const Chat: FC<ChatProps> = ({ chatType, paramKey, apiUrl, channelData, profile 
                     </div>
                 </div>
             </div>
-
             <RightPanel
                 menuRef={menuRef}
                 channelData={channelData}
                 isMenuOpen={isMenuOpen}
                 setMenuOpen={setIsMenuOpen}
                 profile={profile}
+                fetchNextPage={fetchNextPage}
                 categorizedMessages={data?.pages?.[0].categorizedMessages}
+                isAddingToGroup={isAddingToGroup}
+                setIsAddingToGroup={setIsAddingToGroup}
+                onOpen={onOpen}
             />
         </div>
     );

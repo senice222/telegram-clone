@@ -26,6 +26,7 @@ export const useChatScroll = ({
       const scrollTop = topDiv?.scrollTop;
 
       if (scrollTop === 0 && shouldLoadMore) {
+        setIsNearTop(true);
         loadMore();
       }
     };

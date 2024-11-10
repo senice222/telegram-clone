@@ -13,6 +13,7 @@ interface SearchInputProps {
     value?: string;
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     isLoading?: boolean;
+
 }
 
 const SearchInput: FC<SearchInputProps> = ({ isLoading, inputRef, handleFocus, setIsFocused, isFocused, classNames, closeSearch, placeholder, value, onChange }) => {

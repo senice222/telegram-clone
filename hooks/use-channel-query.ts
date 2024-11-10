@@ -18,6 +18,7 @@ export const useChatQuery = ({ queryKey, apiUrl, paramKey, paramValue }: ChatQue
             {
                 url: apiUrl,
                 query: {
+                    isAll: true,
                     cursor: pageParam !== 1 ? pageParam : null,
                     [paramKey]: paramValue,
                 },

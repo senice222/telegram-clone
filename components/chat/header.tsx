@@ -14,6 +14,7 @@ const Header: FC<ChatHeaderProps> = ({ chatType, channelData, profile }) => {
   const [isSearching, setIsSearching] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [showContent, setShowContent] = useState(true);
+  const [searchText, setSearchText] = useState<string>("");
   const router = useRouter()
 
   const isUserMember =
@@ -96,7 +97,7 @@ const Header: FC<ChatHeaderProps> = ({ chatType, channelData, profile }) => {
         </div>
         {isSearching && (
           <div onClick={(e) => e.stopPropagation()} className={`w-full ml-[20px] mr-[20px] transition-opacity duration-300 ${isVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
-            <SearchInput placeholder="Search messages" closeSearch={closeSearch} />
+            <SearchInput value={searchText} onChange={setSearchText} placeholder="Search messages" closeSearch={closeSearch} />
           </div>
         )}
       </div>

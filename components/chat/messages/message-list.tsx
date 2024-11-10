@@ -11,10 +11,15 @@ interface MessageListProps {
   bottomRef: React.RefObject<HTMLDivElement>;
   chatRef: React.RefObject<HTMLDivElement>;
   setIsReplying: React.Dispatch<React.SetStateAction<MessageType | null>>
-  queryKey: string
+  queryKey: string,
+  categorizedMessages: {
+    media: MessageType[];
+    files: MessageType[];
+    links: MessageType[];
+  };
 }
 
-const MessageList: FC<MessageListProps> = ({ chatRef, data, channelData, profile, bottomRef, setIsReplying, queryKey }) => {
+const MessageList: FC<MessageListProps> = ({ chatRef, data, channelData, profile, bottomRef, setIsReplying, queryKey, categorizedMessages }) => {
   return (
     <div ref={chatRef} className="h-[calc(100%-130px)] overflow-y-auto p-4">
       {data?.pages?.map((group: any, i: number) => (
@@ -23,6 +28,7 @@ const MessageList: FC<MessageListProps> = ({ chatRef, data, channelData, profile
             <div key={message.id} id={message.id} className="message">
               <Message
                 queryKey={queryKey}
+                categorizedMessages={categorizedMessages}
                 setIsReplying={setIsReplying}
                 key={message.id}
                 message={message}
