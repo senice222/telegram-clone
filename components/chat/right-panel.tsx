@@ -121,7 +121,7 @@ const RightPanel = ({
               <Tabs className="mt-2" variant="underlined" color="success" aria-label="Options" fullWidth>
                 {isDataGroup && (
                   <Tab key="members" title="Members">
-                    <Members members={channelData.members} />
+                    <Members members={channelData.members} profile={profile} />
                   </Tab>
                 )}
                 <Tab key="media" title="Media">

@@ -25,10 +25,9 @@ export const useGroupMemberSocket = ({ groupMemberKey, queryKey }: GroupMemberSo
                     const groupId = messageData.group.id;
                     const newGroup = messageData.group;
 
-                    // Обновление данных для конкретной группы
                     queryClient.setQueryData([groupId], (oldData: any) => {
                         if (!oldData || !Array.isArray(oldData)) {
-                            return oldData; // Возвращаем `oldData`, если это не массив
+                            return oldData; 
                         }
 
                         const newData = oldData.map((chat: any) => {
@@ -52,7 +51,6 @@ export const useGroupMemberSocket = ({ groupMemberKey, queryKey }: GroupMemberSo
 
                     newMembers.forEach((member: any) => {
                         queryClient.setQueryData(['allChats', member.memberId], (oldData: any) => {
-                            console.log(`Existing data for user ${member.memberId}:`, oldData);
 
                             if (!oldData || !Array.isArray(oldData)) {
                                 return [newGroup];

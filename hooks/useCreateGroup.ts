@@ -40,7 +40,6 @@ export const useAddMemberGroup = (onSuccess?: () => void) => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: [data.group.id] });
       data.newMembers.forEach((member: any) => {
-        console.log("member", member);
         queryClient.invalidateQueries({ queryKey: ['allChats', member.memberId] });
       });
       if (onSuccess) onSuccess();

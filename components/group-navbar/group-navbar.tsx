@@ -67,9 +67,7 @@ const GroupNavbar: FC<GroupNavbarProps> = ({
     };
 
     const isDisabled = selectedMembers.length === 0;
-    const filteredUsers = usersToInvite.filter((user) =>
-        user.name.toLowerCase().includes(searchValue.toLowerCase())
-    )
+    const filteredUsers = usersToInvite.filter((user) => user.name.toLowerCase().includes(searchValue.toLowerCase()))
 
     const toggleMember = (user: User) => {
         setSelectedMembers((prev: User[]) => {

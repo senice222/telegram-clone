@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import Chat from './chat';
 import { User } from '@/types/User';
 import { axiosInstance } from '@/core/axios';
+import { useGroupUpdateSocket } from '@/hooks/use-update-group';
 
 type ChatTypes = 'channel' | 'conversation' | 'group';
 interface ChatProps {
@@ -37,6 +38,7 @@ const ChatWrapper: React.FC<ChatProps> = ({ id, profile }) => {
         queryKey: [channelId],
         queryFn: () => fetchChat(chatType, channelId),
     });
+    useGroupUpdateSocket({ groupKey: `group:${channelId}:updated` });
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>Error loading data</div>;
 

@@ -31,7 +31,11 @@ export const SocketProvider = ({ children, id }: { children: React.ReactNode, id
         };
 
         socketInstance.onclose = () => {
-            socketInstance.send(JSON.stringify({ method: 'user_offline', data: { id } }));
+            if (socketInstance.readyState === WebSocket.OPEN) {
+                socketInstance.send(JSON.stringify({ method: 'user_offline', data: { id } }));
+            } else {
+                console.warn('WebSocket is already closed or closing. Cannot send data.');
+            }
             setIsConnected(false);
         };
 

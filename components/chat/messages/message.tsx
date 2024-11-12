@@ -29,7 +29,8 @@ interface MessageProps {
   };
   profile: User;
   setIsReplying: React.Dispatch<React.SetStateAction<MessageType | null>>;
-  queryKey: string
+  queryKey: string;
+  isModerator: boolean
 }
 
 const Message: FC<MessageProps> = ({
@@ -38,12 +39,13 @@ const Message: FC<MessageProps> = ({
   profile,
   setIsReplying,
   queryKey,
-  categorizedMessages
+  categorizedMessages,
+  isModerator
 }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [newMessage, setNewMessage] = useState<string>(message.content);
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
-  const {onOpen} = useModal()
+  const { onOpen } = useModal()
   const isOwn = message.memberId === profile.id;
   const readKey = `message:${message.id}:read`
   useMessageReadSocket({ queryKey, readKey })
@@ -123,7 +125,7 @@ const Message: FC<MessageProps> = ({
         return (
           <div
             key={index}
-            onClick={() => onOpen("openImage", {src: photo, srcType: "video", categorizedMessages,})}
+            onClick={() => onOpen("openImage", { src: photo, srcType: "video", categorizedMessages, })}
             className={`relative mt-2 ${message.files.fileUrls.length % 2 !== 0 &&
               index === message.files.fileUrls.length - 1
               ? "col-span-2"
@@ -152,7 +154,7 @@ const Message: FC<MessageProps> = ({
       }
       return (
         <div
-          onClick={() => onOpen("openImage", {src: photo, srcType: "img", categorizedMessages})}
+          onClick={() => onOpen("openImage", { src: photo, srcType: "img", categorizedMessages })}
           key={index}
           className={`relative mt-2 ${message.files.fileUrls.length % 2 !== 0 &&
             index === message.files.fileUrls.length - 1
@@ -216,7 +218,7 @@ const Message: FC<MessageProps> = ({
       console.log("error editing message", e);
     }
   };
-  
+
   return (
     <div
       key={message.id}
@@ -352,7 +354,7 @@ const Message: FC<MessageProps> = ({
                 <Copy width={20} color="rgb(170,170,170)" />
                 Copy text
               </button>
-              {isOwn && (
+              {(isOwn) && (
                 <>
                   <button
                     className="flex items-center gap-2 hover:bg-[rgb(0,0,0,0.4)] px-2 py-1 text-[.875rem] font-medium rounded-[0.375rem]"
@@ -361,13 +363,17 @@ const Message: FC<MessageProps> = ({
                     <Pencil width={20} color="rgb(170,170,170)" />
                     Edit
                   </button>
-                  <button
-                    className="flex items-center gap-2 hover:bg-[rgb(0,0,0,0.4)] px-2 py-1 text-[.875rem] font-medium rounded-[0.375rem]"
-                    onClick={handleDelete}
-                  >
-                    <Trash2 width={20} color="rgb(170,170,170)" />
-                    Delete
-                  </button>
+                  {
+                    (isOwn || isModerator) && (
+                      <button
+                        className="flex items-center gap-2 hover:bg-[rgb(0,0,0,0.4)] px-2 py-1 text-[.875rem] font-medium rounded-[0.375rem]"
+                        onClick={handleDelete}
+                      >
+                        <X width={20} color="rgb(170,170,170)" />
+                        Delete
+                      </button>
+                    )
+                  }
                 </>
               )}
             </div>

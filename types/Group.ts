@@ -32,4 +32,5 @@ export interface Member {
     groupId: string
     memberId: string
     profile: User
+    role: string
 }

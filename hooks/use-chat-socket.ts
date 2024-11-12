@@ -20,7 +20,7 @@ export const useChatSocket = ({ addKey, updateKey, queryKey }: ChatSocketProps) 
         const handleMessage = (event: MessageEvent) => {
             try {
                 const messageData = JSON.parse(event.data);
-                console.log(messageData);
+
                 if (messageData.key === updateKey) {
                     const message = messageData.data;
                     queryClient.setQueryData([queryKey], (oldData: any) => {
